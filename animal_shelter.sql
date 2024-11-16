@@ -1,3 +1,31 @@
+BEGIN
+    BEGIN TRY
+        EXEC ('DROP TABLE Donor');
+        EXEC ('DROP TABLE Donate');
+        EXEC ('DROP TABLE Branch');
+        EXEC ('DROP TABLE Volunteer');
+        EXEC ('DROP TABLE Role');
+        EXEC ('DROP TABLE Vet');
+        EXEC ('DROP TABLE WorkFor');
+        EXEC ('DROP TABLE Supplies');
+        EXEC ('DROP TABLE EmployeeManages');
+        EXEC ('DROP TABLE Position');
+        EXEC ('DROP TABLE Cage');
+        EXEC ('DROP TABLE FloorNumber');
+        EXEC ('DROP TABLE Animal');
+        EXEC ('DROP TABLE AdoptionFee');
+        EXEC ('DROP TABLE Dog');
+        EXEC ('DROP TABLE Cat');
+        EXEC ('DROP TABLE Treat');
+        EXEC ('DROP TABLE Adopter');
+    END TRY
+    BEGIN CATCH
+        -- Optionally log the error here or handle it
+        PRINT 'An error occurred while dropping tables.';
+    END CATCH
+END;
+
+
 CREATE TABLE Donor (
     donor_ID INTEGER PRIMARY KEY,
     donor_name VARCHAR(255),
@@ -53,7 +81,7 @@ CREATE TABLE WorkFor (
     FOREIGN KEY (branch_city, branch_province) REFERENCES Branch(city, province)
 );
 
-CREATE Supplies (
+CREATE TABLE Supplies (
     supply_name VARCHAR(255),
     branch_city VARCHAR(255),
     branch_province VARCHAR(255),
@@ -90,7 +118,7 @@ CREATE TABLE Cage (
     FOREIGN KEY (branch_city, branch_province) REFERENCES Branch(city, province) ON DELETE CASCADE
 );
 
-CREATE FloorNumber (
+CREATE TABLE FloorNumber (
     floor_number INTEGER,
     size VARCHAR(50),
     PRIMARY KEY (floor_number)
@@ -152,4 +180,4 @@ CREATE TABLE Adopter (
     adopter_age INTEGER,
     adopter_address VARCHAR(255),
     criminal_record VARCHAR(255)
-)
+);
