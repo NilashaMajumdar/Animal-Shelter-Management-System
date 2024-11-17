@@ -121,7 +121,7 @@ CREATE TABLE FloorNumber (
     floor_number INTEGER,
     size VARCHAR(50),
     PRIMARY KEY (floor_number)
-)
+);
 
 CREATE TABLE Animal (
     animal_ID INTEGER,
@@ -140,6 +140,8 @@ CREATE TABLE Animal (
     FOREIGN KEY (adopter_ID) REFERENCES Adopter(adopter_ID),
     FOREIGN KEY (cage_number) REFERENCES Cage(cage_number),
     FOREIGN KEY (branch_city, branch_province) REFERENCES Branch(city, province)
+    -- I think it should be this: FOREIGN KEY (cage_number, branch_city, branch_province) REFERENCES
+    -- Cage(cage_number, branch_city, branch_province)  we can double check with the TA
 );
 
 CREATE TABLE AdoptionFee (
@@ -180,3 +182,25 @@ CREATE TABLE Adopter (
     adopter_address VARCHAR(255),
     criminal_record VARCHAR(255)
 )
+
+-- done adding all of the tables, now add in some tuples
+
+
+INSERT INTO Donor VALUES (1, 'Macy Raymond', 'money');
+INSERT INTO Donor VALUES (2, 'Jack Shepherd', 'dog toys');
+INSERT INTO Donor VALUES (3, 'Lilah Knapp', 'cat toys');
+INSERT INTO Donor VALUES (4, 'Noah Lucero', 'money');
+INSERT INTO Donor VALUES (5, 'Angela Owens', 'cleaning supplies');
+INSERT INTO Donor VALUES (6, 'Jaden Marsh', 'money');
+
+INSERT INTO Donate VALUES (1, 'Calgary', 'Alberta', 50);
+INSERT INTO Donate VALUES (1, 'Vancouver', 'British Columbia', 45);
+INSERT INTO Donate VALUES (2, 'Calgary', 'Alberta', 2);
+INSERT INTO Donate VALUES (3, 'Burnaby', 'British Columbia', 4);
+INSERT INTO Donate VALUES (4, 'Winnipeg', 'Manitoba', 70);
+INSERT INTO Donate VALUES (5, 'Toronto', 'Ontario', 3);
+INSERT INTO Donate VALUES (6, 'Ottawa', 'Ontario', 150);
+
+
+
+
