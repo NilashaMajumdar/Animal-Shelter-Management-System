@@ -201,6 +201,39 @@ INSERT INTO Donate VALUES (4, 'Winnipeg', 'Manitoba', 70);
 INSERT INTO Donate VALUES (5, 'Toronto', 'Ontario', 3);
 INSERT INTO Donate VALUES (6, 'Ottawa', 'Ontario', 150);
 
+INSERT INTO Branch VALUES ('Calgary', 'Alberta', '4706 Maynard Rd');
+INSERT INTO Branch VALUES ('Vancouver', 'British Columbia', '84 Robson St');
+INSERT INTO Branch VALUES ('Burnaby', 'British Columbia', '397 James Street');
+INSERT INTO Branch VALUES ('Winnipeg', 'Manitoba', '4046 St Marys Rd');
+INSERT INTO Branch VALUES ('Toronto', 'Ontario', '644 Danforth Avenue');
+INSERT INTO Branch VALUES ('Ottawa', 'Ontario', '819 MacLaren Street');
+
+
+INSERT INTO Volunteer VALUES (37927, 'Joyce Page', 'Animal Care Assistant', '2024-04-24', 'Burnaby',
+     'British Columbia');
+INSERT INTO Volunteer VALUES (37940, 'Kian Wu', 'Animal Care Assistant', '2023-09-13', 'Calgary',
+     'Alberta');
+INSERT INTO Volunteer VALUES (41338, 'Jasmine McCann', 'Dog Walker/Cat Socializer', '2023-04-22',
+     'Winnipeg', 'Manitoba');
+INSERT INTO Volunteer VALUES (28387, 'Lucy Reid', 'Adoption Event Assistant', '2022-02-07', 'Calgary',
+     'Alberta');
+INSERT INTO Volunteer VALUES (38429, 'Denise Kim', 'Transport Volunteer', '2024-03-10', 'Calgary',
+     'Alberta');
+
+INSERT INTO Role VALUES ('Animal Care Assistant', 5);
+INSERT INTO Role VALUES ('Dog Walker/Cat Socializer', 4);
+INSERT INTO Role VALUES ('Adoption Event Assistant', 5);
+INSERT INTO Role VALUES ('Shelter Administrative Support', 6);
+INSERT INTO Role VALUES ('Transport Volunteer', 2);
+INSERT INTO Role VALUES ('Photography/Videography Volunteer', 3);
+
+INSERT INTO Vet VALUES (1, 'Katelyn Lyons', 'Pawsitive Care Veterinary Clinic');
+INSERT INTO Vet VALUES (2, 'Barbara Bowen', 'Healing Paws Animal Hospital');
+INSERT INTO Vet VALUES (3, 'Revor Stevenson', 'Compassionate Creatures Veterinary Clinic');
+INSERT INTO Vet VALUES (4, 'Abby Benson', 'Pawsitive Care Veterinary Clinic');
+INSERT INTO Vet VALUES (5, 'Vanessa Wu', 'The Pet Palette Veterinary Clinic');
+
+
 
 
 
