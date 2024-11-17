@@ -234,6 +234,81 @@ INSERT INTO Vet VALUES (4, 'Abby Benson', 'Pawsitive Care Veterinary Clinic');
 INSERT INTO Vet VALUES (5, 'Vanessa Wu', 'The Pet Palette Veterinary Clinic');
 
 
+INSERT INTO WorkFor VALUES (1, 'Vancouver', 'British Columbia', 65);
+INSERT INTO WorkFor VALUES (1, 'Burnaby', 'British Columbia', 50);
+INSERT INTO WorkFor VALUES (2, 'Calgary', 'Alberta', 47);
+INSERT INTO WorkFor VALUES (3, 'Winnipeg', 'Manitoba', 43);
+INSERT INTO WorkFor VALUES (4, 'Vancouver', 'British Columbia', 70);
+INSERT INTO WorkFor VALUES (5, 'Ottawa', 'Ontario', 59);
+
+INSERT INTO Supplies VALUES ('Cleaning supplies', 'Calgary', 'Alberta', 10);
+INSERT INTO Supplies VALUES ('Toys/Enrichment items', 'Vancouver', 'British Columbia', 40);
+INSERT INTO Supplies VALUES ('Blankets', 'Burnaby', 'British Columbia', 25);
+INSERT INTO Supplies VALUES ('Cleaning supplies', 'Burnaby', 'British Columbia', 14);
+INSERT INTO Supplies VALUES ('Blankets', 'Winnipeg', 'Manitoba', 33);
+INSERT INTO Supplies VALUES ('Toys/Enrichment items', 'Ottawa', 'Ontario', 47);
+
+INSERT INTO EmployeeManages VALUES (1234, 'Calgary', 'Alberta', 'Evan Turner', 'Manager', '2022-01-15');
+INSERT INTO EmployeeManages VALUES (5678, 'Vancouver', 'British Columbia', 'Olivia Mason', 'Assistant Manager',
+     '2023-03-12');
+INSERT INTO EmployeeManages VALUES (9101, 'Burnaby', 'British Columbia', 'Sophia Carter', 'Veterinarian',
+     '2022-09-25');
+INSERT INTO EmployeeManages VALUES (1121, 'Winnipeg', 'Manitoba', 'Liam Johnson', 'Assistant Manager', '2023-
+05-18');
+INSERT INTO EmployeeManages VALUES (3141, 'Ottawa', 'Ontario', 'Ella Brown', 'Animal Trainer', '2021-07-04');
 
 
+INSERT INTO Position VALUES ('Manager', 70000);
+INSERT INTO Position VALUES ('Assistant Manager', 55000);
+INSERT INTO Position VALUES ('Veterinarian', 80000);
+INSERT INTO Position VALUES ('Shelter Assistant', 40000);
+INSERT INTO Position VALUES ('Animal Trainer', 45000);
 
+
+INSERT INTO Cage VALUES (1, 'Calgary', 'Alberta', 2);
+INSERT INTO Cage VALUES (2, 'Vancouver', 'British Columbia', 1);
+INSERT INTO Cage VALUES (3, 'Burnaby', 'British Columbia', 3);
+INSERT INTO Cage VALUES (4, 'Winnipeg', 'Manitoba', 1);
+INSERT INTO Cage VALUES (5, 'Ottawa', 'Ontario', 2);
+
+INSERT INTO FloorNumber VALUES (1, 'Large');
+INSERT INTO FloorNumber VALUES (2, 'Medium');
+INSERT INTO FloorNumber VALUES (3, 'Small');
+INSERT INTO FloorNumber VALUES (4, 'Large');
+INSERT INTO FloorNumber VALUES (5, 'Medium');
+
+INSERT INTO Animal VALUES (1001, 'Max', 'Labrador', 4, '2023-07-12', NULL, NULL, 1, 'Calgary',
+     'Alberta');
+INSERT INTO Animal VALUES (1002, 'Bella', 'German Shepherd', 3, '2022-12-05', '2023-10-10', 3001, 2,
+     'Vancouver', 'British Columbia');
+INSERT INTO Animal VALUES (1003, 'Milo', 'Beagle', 2, '2023-04-22', NULL, NULL, 3, 'Burnaby', 'British
+Columbia');
+INSERT INTO Animal VALUES (2001, 'Luna', 'Persian', 1, '2023-08-01', NULL, NULL, 4, 'Winnipeg',
+     'Manitoba');
+INSERT INTO Animal VALUES (1005, 'Charlie', 'Poodle', 5, '2021-09-15', '2023-01-20', 3002, 5,
+     'Ottawa', 'Ontario');
+
+INSERT INTO AdoptionFee VALUES ('Labrador', 4, 400);
+INSERT INTO AdoptionFee VALUES ('German Shepherd', 3, 600);
+INSERT INTO AdoptionFee VALUES ('Beagle', 2, 650);
+INSERT INTO AdoptionFee VALUES ('Persian', 1, 500);
+INSERT INTO AdoptionFee VALUES ('Poodle', 5, 560);
+
+INSERT INTO Dog VALUES (1001, 'High');
+INSERT INTO Dog VALUES (1002, 'Moderate');
+INSERT INTO Dog VALUES (1003, 'Low');
+INSERT INTO Dog VALUES (1004, 'Low');
+INSERT INTO Dog VALUES (1005, 'Moderate');
+
+INSERT INTO Cat VALUES (2001, 'Frequent napper');
+INSERT INTO Cat VALUES (2002, 'Sleeps after meals');
+INSERT INTO Cat VALUES (2003, 'No regular naps');
+INSERT INTO Cat VALUES (2004, 'Takes long naps');
+INSERT INTO Cat VALUES (2005, 'Short naps throughout the day');
+
+
+INSERT INTO Adopter VALUES (3001, 'John Doe', 35, '123 Elm St, Vancouver, BC', 'None');
+INSERT INTO Adopter VALUES (3002, 'Jane Smith', 28, '456 Maple Ave, Ottawa, ON', 'None');
+INSERT INTO Adopter VALUES (3003, 'Michael Brown', 40, '789 Oak Rd, Calgary, AB', 'None');
+INSERT INTO Adopter VALUES (3004, 'Emily Davis', 32, '321 Pine St, Burnaby, BC', 'None');
+INSERT INTO Adopter VALUES (3005, 'Daniel Lee', 45, '654 Cedar Ln, Winnipeg, MB', 'None');
