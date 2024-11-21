@@ -141,7 +141,7 @@ CREATE TABLE Animal (
     FOREIGN KEY (cage_number) REFERENCES Cage(cage_number),
     FOREIGN KEY (branch_city, branch_province) REFERENCES Branch(city, province)
     -- I think it should be this: FOREIGN KEY (cage_number, branch_city, branch_province) REFERENCES
-    -- Cage(cage_number, branch_city, branch_province)  we can double check with the TA
+    -- Cage(cage_number, branch_city, branch_province)  we can double-check with the TA
 );
 
 CREATE TABLE AdoptionFee (
@@ -169,7 +169,7 @@ CREATE TABLE Treat (
     vet_ID INTEGER,
     animal_ID INTEGER,
     number_of_surgeries INTEGER,
-    vaccination BOOLEAN,
+    vaccination BIT,
     PRIMARY KEY (vet_ID, animal_ID),
     FOREIGN KEY (vet_ID) REFERENCES Vet(vet_ID),
     FOREIGN KEY (animal_ID) REFERENCES Animal(animal_ID)
@@ -183,7 +183,7 @@ CREATE TABLE Adopter (
     criminal_record VARCHAR(255)
 )
 
--- done adding all of the tables, now add in some tuples
+-- done adding all the tables, now add in some tuples
 
 
 INSERT INTO Donor VALUES (1, 'Macy Raymond', 'money');
