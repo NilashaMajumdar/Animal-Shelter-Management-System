@@ -105,16 +105,48 @@ async function initiateDemotable() {
     });
 }
 
-async function insertDemotable(id, name) {
+async function insertDemotable(donorId, branchCity, branchProvince, amount) {
     return await withOracleDB(async (connection) => {
+        console.log("h")
+        const donorIdCheck = await connection.execute(
+            `SELECT 1 FROM Donor WHERE donor_ID = :donorId`,
+            [donorId],
+            { autoCommit: true }
+        );
+
+        console.log("dd")
+
+        if(!donorIdCheck) {
+            throw error(
+                "A donor with this ID does not exist"
+            )
+        }
+
+        console.log("ds")
+
+        const cityAndProvinceCheck = await connection.execute(
+            `SELECT 1 FROM Branch WHERE branch_city = :branchCity AND branch_province = :branchProvince`,
+            [branchCity, branchProvince],
+            { autoCommit: true }
+        );
+
+        console.log("hello")
+
+        if(!cityAndProvinceCheck) {
+            throw error(
+                "There is no branch in" + branchCity + ", " + branchProvince + "!"
+            )
+        }
+
         const result = await connection.execute(
-            `INSERT INTO DEMOTABLE (id, name) VALUES (:id, :name)`,
-            [id, name],
+            `INSERT INTO DONATE (donor_ID, branch_city, branch_province, amount) VALUES (:donorId, :branchCity, :branchProvince, :amount)`,
+            [donorId, branchCity, branchProvince, amount],
             { autoCommit: true }
         );
 
         return result.rowsAffected && result.rowsAffected > 0;
-    }).catch(() => {
+    }).catch((error) => {
+        console.error(error.message);
         return false;
     });
 }

@@ -82,8 +82,10 @@ async function resetDemotable() {
 async function insertDemotable(event) {
     event.preventDefault();
 
-    const idValue = document.getElementById('insertId').value;
-    const nameValue = document.getElementById('insertName').value;
+    const donorId = document.getElementById('insertId').value;
+    const branchCity = document.getElementById('branchCity').value;
+    const branchProvince = document.getElementById('branchProvince').value;
+    const amount = document.getElementById('donatedAmount').value;
 
     const response = await fetch('/insert-demotable', {
         method: 'POST',
@@ -91,8 +93,10 @@ async function insertDemotable(event) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            id: idValue,
-            name: nameValue
+            donorId: donorId,
+            branchCity: branchCity,
+            branchProvince: branchProvince,
+            amount: amount
         })
     });
 
@@ -100,7 +104,7 @@ async function insertDemotable(event) {
     const messageElement = document.getElementById('insertResultMsg');
 
     if (responseData.success) {
-        messageElement.textContent = "Data inserted successfully!";
+        messageElement.textContent = "Data inserted successfully! yay";
         fetchTableData();
     } else {
         messageElement.textContent = "Error inserting data!";
@@ -154,6 +158,26 @@ async function countDemotable() {
     }
 }
 
+async function searchAnimal() {
+    const response = await fetch("/selection-animal", {
+        method: 'GET'
+    });
+
+    const responseData = await response.json();
+    const messageElement = document.getElementById('countResultMsg');
+
+    if (responseData.success) {
+        const tupleCount = responseData.count;
+        messageElement.textContent = `The number of tuples in demotable: ${tupleCount}`;
+    } else {
+        alert("Error in count demotable!");
+    }
+}
+
+function openAnimalSearchPage() {
+    window.location.href = "animalSearch.html";
+}
+
 
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
@@ -165,6 +189,7 @@ window.onload = function() {
     document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
     document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);
     document.getElementById("countDemotable").addEventListener("click", countDemotable);
+    document.getElementById("openAnimalSearchPage").addEventListener("click", openAnimalSearchPage);
 };
 
 // General function to refresh the displayed table data. 

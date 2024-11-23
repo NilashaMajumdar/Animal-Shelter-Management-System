@@ -30,8 +30,10 @@ router.post("/initiate-demotable", async (req, res) => {
 });
 
 router.post("/insert-demotable", async (req, res) => {
-    const { id, name } = req.body;
-    const insertResult = await appService.insertDemotable(id, name);
+    const { donorId, branchCity, branchProvince, amount } = req.body;
+    console.log("Request Data:", { donorId, branchCity, branchProvince, amount });
+
+    const insertResult = await appService.insertDemotable(donorId, branchCity, branchProvince, amount);
     if (insertResult) {
         res.json({ success: true });
     } else {
@@ -59,6 +61,21 @@ router.get('/count-demotable', async (req, res) => {
     } else {
         res.status(500).json({ 
             success: false, 
+            count: tableCount
+        });
+    }
+});
+
+router.get('/selection-animal', async (req, res) => {
+    const tableCount = await appService.countDemotable();
+    if (tableCount >= 0) {
+        res.json({
+            success: true,
+            count: tableCount
+        });
+    } else {
+        res.status(500).json({
+            success: false,
             count: tableCount
         });
     }
