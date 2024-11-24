@@ -182,6 +182,7 @@ async function insertDemotable(donorId, branchCity, branchProvince, amount) {
                 `SELECT * FROM Branch`
             );
             console.log("Branch table data:", branchData.rows);
+            // console.log("hope git saves")
 
             // Continue with regular checks...
             console.log("Checking donor ID...");

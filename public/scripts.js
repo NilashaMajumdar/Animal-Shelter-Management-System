@@ -83,6 +83,8 @@ async function insertDemotable(event) {
     event.preventDefault();
 
     console.log("scripts.js: starting insertDemoTable")
+    console.log("hope git saves")
+
 
     const donorId = document.getElementById('insertId').value;
     const branchCity = document.getElementById('branchCity').value;
