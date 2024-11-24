@@ -82,10 +82,22 @@ async function resetDemotable() {
 async function insertDemotable(event) {
     event.preventDefault();
 
+    console.log("scripts.js: starting insertDemoTable")
+
     const donorId = document.getElementById('insertId').value;
     const branchCity = document.getElementById('branchCity').value;
     const branchProvince = document.getElementById('branchProvince').value;
     const amount = document.getElementById('donatedAmount').value;
+
+    console.log("scripts.js: fetched all the values")
+    console.log("scripts.js: awaiting fetch after this statement")
+    const payload = {
+        donorId,
+        branchCity,
+        branchProvince,
+        amount
+    };
+    console.log(payload)
 
     const response = await fetch('/insert-demotable', {
         method: 'POST',
@@ -99,6 +111,9 @@ async function insertDemotable(event) {
             amount: amount
         })
     });
+    console.log("fetched!!")
+    const responseText = await response.text();
+    console.log("scripts.js: Response body:", responseText);
 
     const responseData = await response.json();
     const messageElement = document.getElementById('insertResultMsg');

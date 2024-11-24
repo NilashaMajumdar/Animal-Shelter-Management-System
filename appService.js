@@ -105,52 +105,124 @@ async function initiateDemotable() {
     });
 }
 
+// async function insertDemotable(donorId, branchCity, branchProvince, amount) {
+//     console.log("appService.js: Starting insertDemotable with params:", { donorId, branchCity, branchProvince, amount });
+//     return await withOracleDB(async (connection) => {
+//         console.log("appService.js: In insertDemoTable function")
+//         console.log("appService.js: Will check if donorID exists or not in Donor table using SELECT now")
+//
+//         const donorIdCheck = await connection.execute(
+//             `SELECT 1 FROM Donor WHERE donor_ID = :donorId`,
+//             [donorId],
+//             { autoCommit: true }
+//         );
+//
+//         console.log("appService.js: Fetched donorID ")
+//
+//         if(!donorIdCheck) {
+//             throw error(
+//                 "A donor with this ID does not exist"
+//             )
+//         }
+//
+//         console.log("appService.js: non existant id error clause not thrown")
+//         console.log("appService.js: Will check if branch city and province exists in Branch table using SELECT now")
+//
+//
+//         const cityAndProvinceCheck = await connection.execute(
+//             `SELECT 1 FROM Branch WHERE city = :branchCity AND province = :branchProvince`,
+//             [branchCity, branchProvince],
+//             { autoCommit: true }
+//         );
+//
+//         console.log("appService.js: Fetched branch details")
+//
+//         if (cityAndProvinceCheck.rows.length === 0) {
+//             throw new Error(`There is no branch in ${branchCity}, ${branchProvince}!`);
+//         }
+//         // if(!cityAndProvinceCheck) {
+//         //     throw error(
+//         //         "There is no branch in" + branchCity + ", " + branchProvince + "!"
+//         //     )
+//         // }
+//         console.log("appService.js: Branch non existant error not thrown")
+//         console.log("appService.js: Now we will try to insert the record into given DONATE table")
+//
+//
+//         const result = await connection.execute(
+//             `INSERT INTO Donate (donor_ID, branch_city, branch_province, amount) VALUES (:donorId, :branchCity, :branchProvince, :amount)`,
+//             [donorId, branchCity, branchProvince, amount],
+//             { autoCommit: true }
+//         );
+//
+//         console.log("appService.js: YAYY INSERTION IS DONE!!")
+//
+//         return result.rowsAffected && result.rowsAffected > 0;
+//     }).catch((error) => {
+//         console.error(error.message);
+//         return false;
+//     });
+// }
 async function insertDemotable(donorId, branchCity, branchProvince, amount) {
+    console.log("appService.js: Starting insertDemotable with params:", { donorId, branchCity, branchProvince, amount });
     return await withOracleDB(async (connection) => {
-        console.log("h")
-        const donorIdCheck = await connection.execute(
-            `SELECT 1 FROM Donor WHERE donor_ID = :donorId`,
-            [donorId],
-            { autoCommit: true }
-        );
+        try {
+            // DEBUG: First check Branch table structure
+            console.log("DEBUG: Checking Branch table structure...");
+            const tableInfo = await connection.execute(
+                `SELECT column_name, data_type 
+                 FROM user_tab_columns 
+                 WHERE table_name = 'BRANCH'`
+            );
+            console.log("Branch table columns:", tableInfo.rows);
 
-        console.log("dd")
+            // DEBUG: Check Branch table data
+            console.log("DEBUG: Checking Branch table data...");
+            const branchData = await connection.execute(
+                `SELECT * FROM Branch`
+            );
+            console.log("Branch table data:", branchData.rows);
 
-        if(!donorIdCheck) {
-            throw error(
-                "A donor with this ID does not exist"
-            )
+            // Continue with regular checks...
+            console.log("Checking donor ID...");
+            const donorIdCheck = await connection.execute(
+                `SELECT 1 FROM Donor WHERE donor_ID = :1`,
+                [donorId]
+            );
+
+            if (donorIdCheck.rows.length === 0) {
+                throw new Error("A donor with this ID does not exist");
+            }
+
+            console.log("Checking branch existence...");
+            const cityAndProvinceCheck = await connection.execute(
+                `SELECT 1 FROM Branch WHERE city = :1 AND province = :2`,
+                [branchCity, branchProvince]
+            );
+
+            if (cityAndProvinceCheck.rows.length === 0) {
+                throw new Error(`There is no branch in ${branchCity}, ${branchProvince}!`);
+            }
+
+            console.log("Inserting into Donate table...");
+            const result = await connection.execute(
+                `INSERT INTO Donate (donor_ID, branch_city, branch_province, amount) 
+                 VALUES (:1, :2, :3, :4)`,
+                [donorId, branchCity, branchProvince, amount],
+                { autoCommit: true }
+            );
+
+            return result.rowsAffected > 0;
+
+        } catch (error) {
+            console.error("Error details:", error);
+            throw error;
         }
-
-        console.log("ds")
-
-        const cityAndProvinceCheck = await connection.execute(
-            `SELECT 1 FROM Branch WHERE branch_city = :branchCity AND branch_province = :branchProvince`,
-            [branchCity, branchProvince],
-            { autoCommit: true }
-        );
-
-        console.log("hello")
-
-        if(!cityAndProvinceCheck) {
-            throw error(
-                "There is no branch in" + branchCity + ", " + branchProvince + "!"
-            )
-        }
-
-        const result = await connection.execute(
-            `INSERT INTO DONATE (donor_ID, branch_city, branch_province, amount) VALUES (:donorId, :branchCity, :branchProvince, :amount)`,
-            [donorId, branchCity, branchProvince, amount],
-            { autoCommit: true }
-        );
-
-        return result.rowsAffected && result.rowsAffected > 0;
     }).catch((error) => {
-        console.error(error.message);
+        console.error("Database operation failed:", error);
         return false;
     });
 }
-
 async function updateNameDemotable(oldName, newName) {
     return await withOracleDB(async (connection) => {
         const result = await connection.execute(
