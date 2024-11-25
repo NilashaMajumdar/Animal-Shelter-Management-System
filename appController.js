@@ -80,6 +80,31 @@ router.get('/selection-animal', async (req, res) => {
         });
     }
 });
+router.get('/volunteers', async (req, res) => {
+    const volunteers = await appService.fetchVolunteers();
+    res.json(volunteers);
+});
+
+router.get('/roles', async (req, res) => {
+    const roles = await appService.fetchAvailableRoles();
+    res.json(roles);
+});
+
+router.get('/branches', async (req, res) => {
+    const branches = await appService.fetchBranches();
+    res.json(branches);
+});
+
+router.post('/update-volunteer/:id', async (req, res) => {
+    try {
+        const success = await appService.updateVolunteer(req.params.id, req.body);
+        res.json({ success });
+    } catch (error) {
+        res.json({ success: false, error: error.message });
+    }
+});
+
+
 
 
 module.exports = router;

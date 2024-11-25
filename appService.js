@@ -1,3 +1,10 @@
+
+
+
+// export async function updateVolunteer() {
+//
+// }
+
 const oracledb = require('oracledb');
 const loadEnvFile = require('./utils/envUtil');
 
@@ -22,6 +29,48 @@ async function initializeConnectionPool() {
     } catch (err) {
         console.error('Initialization error: ' + err.message);
     }
+}
+
+async function fetchVolunteers() {
+    console.log("appService.js: in fetch volunteers right now")
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `SELECT v.volunteer_ID, v.volunteer_name, v.volunteer_role, 
+                    TO_CHAR(v.started_date, 'YYYY-MM-DD') as started_date, 
+                    v.branch_city, v.branch_province 
+             FROM Volunteer v`
+        );
+        console.log("fetched volunteer info!!")
+        return result.rows;
+    }).catch((error) => {
+        console.error('Error fetching volunteers:', error);
+        return [];
+    });
+}
+
+async function fetchAvailableRoles() {
+    console.log("appService.js: in fetch available rorws right now")
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute('SELECT role FROM Role');
+        console.log("appService.js: fetched available rorws!!!")
+        return result.rows;
+    }).catch((error) => {
+        console.error('Error fetching roles:', error);
+        return [];
+    });
+}
+
+async function fetchBranches() {
+    console.log("appService.js: in fetch branches right now")
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute('SELECT city, province FROM Branch');
+        console.log("appService.js: fetched branches!!!")
+
+        return result.rows;
+    }).catch((error) => {
+        console.error('Error fetching branches:', error);
+        return [];
+    });
 }
 
 async function closePoolAndExit() {
@@ -224,17 +273,79 @@ async function insertDemotable(donorId, branchCity, branchProvince, amount) {
         return false;
     });
 }
-async function updateNameDemotable(oldName, newName) {
+// async function updateNameDemotable(oldName, newName) {
+//     console.log("appService.js: Starting update with params:", { donorId, branchCity, branchProvince, amount });
+//
+//     return await withOracleDB(async (connection) => {
+//         const result = await connection.execute(
+//             `UPDATE DEMOTABLE SET name=:newName where name=:oldName`,
+//             [newName, oldName],
+//             { autoCommit: true }
+//         );
+//
+//         return result.rowsAffected && result.rowsAffected > 0;
+//     }).catch(() => {
+//         return false;
+//     });
+// }
+
+async function updateVolunteer(volunteerId, updates) {
+    console.log("appService.js: Inside updateVolunteer function now");
     return await withOracleDB(async (connection) => {
+        // Build dynamic UPDATE query based on provided fields
+        let updateFields = [];
+        let bindParams = [];
+        let bindValues = [];
+
+        if (updates.volunteer_name) {
+            updateFields.push('volunteer_name = :volunteer_name');
+            bindParams.push(':volunteer_name');
+            bindValues.push(updates.volunteer_name);
+        }
+        if (updates.volunteer_role) {
+            updateFields.push('volunteer_role = :volunteer_role');
+            bindParams.push(':volunteer_role');
+            bindValues.push(updates.volunteer_role);
+        }
+        if (updates.started_date) {
+            updateFields.push('started_date = TO_DATE(:started_date, \'YYYY-MM-DD\')');
+            bindParams.push(':started_date');
+            bindValues.push(updates.started_date);
+        }
+        if (updates.branch_city && updates.branch_province) {
+            updateFields.push('branch_city = :branch_city');
+            updateFields.push('branch_province = :branch_province');
+            bindParams.push(':branch_city', ':branch_province');
+            bindValues.push(updates.branch_city, updates.branch_province);
+        }
+
+
+        // Add volunteerId to bind values
+        bindValues.push(volunteerId);
+        console.log("appService.js: Inside await now");
+        console.log("appService.js: will execute query soon");
+        console.log("update_fields:", updateFields);
+        console.log("bindValues:", bindValues);
+
+
+        const query = `
+            UPDATE Volunteer 
+            SET ${updateFields.join(', ')} 
+            WHERE volunteer_ID = :volunteer_id
+        `;
+        console.log("query:", query)
+
         const result = await connection.execute(
-            `UPDATE DEMOTABLE SET name=:newName where name=:oldName`,
-            [newName, oldName],
+            query,
+            [...bindValues],
             { autoCommit: true }
         );
 
-        return result.rowsAffected && result.rowsAffected > 0;
-    }).catch(() => {
-        return false;
+        console.log("updated!! yayy")
+        return result.rowsAffected > 0;
+    }).catch((error) => {
+        console.error('Error updating volunteer:', error);
+        throw error;
     });
 }
 
@@ -252,6 +363,10 @@ module.exports = {
     fetchDemotableFromDb,
     initiateDemotable, 
     insertDemotable, 
-    updateNameDemotable, 
-    countDemotable
+    // updateNameDemotable,
+    countDemotable,
+    updateVolunteer,
+    fetchVolunteers,
+    fetchAvailableRoles,
+    fetchBranches
 };
