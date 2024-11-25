@@ -20,14 +20,14 @@ router.get('/demotable', async (req, res) => {
     res.json({data: tableContent});
 });
 
-router.post("/initiate-demotable", async (req, res) => {
-    const initiateResult = await appService.initiateDemotable();
-    if (initiateResult) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ success: false });
-    }
-});
+// router.post("/initiate-demotable", async (req, res) => {
+//     const initiateResult = await appService.initiateDemotable();
+//     if (initiateResult) {
+//         res.json({ success: true });
+//     } else {
+//         res.status(500).json({ success: false });
+//     }
+// });
 
 router.post("/insert-demotable", async (req, res) => {
     const { donorId, branchCity, branchProvince, amount } = req.body;
@@ -41,45 +41,28 @@ router.post("/insert-demotable", async (req, res) => {
     }
 });
 
-router.post("/update-name-demotable", async (req, res) => {
-    const { oldName, newName } = req.body;
-    const updateResult = await appService.updateNameDemotable(oldName, newName);
-    if (updateResult) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ success: false });
-    }
-});
+router.delete('/delete-supplies', async (req, res) => {
+    try {
+        const { supplyName, branchCity, branchProvince } = req.body;
+        const success = await appService.deleteSupplies(supplyName, branchCity, branchProvince);
 
-router.get('/count-demotable', async (req, res) => {
-    const tableCount = await appService.countDemotable();
-    if (tableCount >= 0) {
-        res.json({ 
-            success: true,  
-            count: tableCount
-        });
-    } else {
-        res.status(500).json({ 
-            success: false, 
-            count: tableCount
-        });
-    }
-});
-
-router.get('/selection-animal', async (req, res) => {
-    const tableCount = await appService.countDemotable();
-    if (tableCount >= 0) {
-        res.json({
-            success: true,
-            count: tableCount
-        });
-    } else {
+        if (success) {
+            res.json({ success: true });
+        } else {
+            res.status(404).json({
+                success: false,
+                error: "Supply not found or could not be deleted"
+            });
+        }
+    } catch (error) {
         res.status(500).json({
             success: false,
-            count: tableCount
+            error: error.message
         });
     }
 });
+
+
 router.get('/volunteers', async (req, res) => {
     const volunteers = await appService.fetchVolunteers();
     res.json(volunteers);
@@ -103,8 +86,5 @@ router.post('/update-volunteer/:id', async (req, res) => {
         res.json({ success: false, error: error.message });
     }
 });
-
-
-
 
 module.exports = router;

@@ -121,10 +121,35 @@
         <button type="submit" class="btn btn-primary">Update Volunteer</button>
         <button type="button" class="btn btn-secondary" onclick="this.form.style.display='none'">Cancel</button>
     </form>
-<!--    <br><hr><br> &lt;!&ndash; ========================================================================= &ndash;&gt;-->
+    <br><hr><br> <!-- ========================================================================= -->
+    <h2>Delete Supplies</h2>
+
+    <form id="deleteSuppliesForm">
+        <div class="form-group">
+            <label for="supplyName">Supply Name:</label>
+            <input type="text" id="supplyName" required>
+        </div>
+
+        <div class="form-group">
+            <label for="deleteBranchCity">Branch City:</label>
+            <select id="deleteBranchCity" required>
+                <option value="">Select City</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="deleteBranchProvince">Branch Province:</label>
+            <select id="deleteBranchProvince" required>
+                <option value="">Select Province</option>
+            </select>
+        </div>
+
+        <button type="submit">Delete Supply</button>
+    </form>
+    <div id="deleteResultMsg"></div>
 
 
-<!--    <h2>Update Name in DemoTable</h2>-->
+    <!--    <h2>Update Name in DemoTable</h2>-->
 <!--    <p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>-->
 <!--    <form id="updataNameDemotable">-->
 <!--        Old Name: <input type="text" id="updateOldName" placeholder="Enter Old Name" required> <br><br>-->

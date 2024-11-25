@@ -35,6 +35,79 @@ async function fetchAndDisplayVolunteers() {
     });
 }
 
+async function setupDeleteSuppliesForm() {
+    const citySelect = document.getElementById('deleteBranchCity');
+    const provinceSelect = document.getElementById('deleteBranchProvince');
+
+    const branchResponse = await fetch('/branches');
+    const branches = await branchResponse.json();
+
+    const branchMap = new Map();
+    branches.forEach(([city, province]) => {
+        if (!branchMap.has(city)) {
+            branchMap.set(city, new Set());
+        }
+        branchMap.get(city).add(province);
+    });
+
+    [...branchMap.keys()].forEach(city => {
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+    });
+
+    // Update provinces when city changes
+    citySelect.addEventListener('change', () => {
+        const selectedCity = citySelect.value;
+        provinceSelect.innerHTML = '<option value="">Select Province</option>';
+        if (selectedCity && branchMap.has(selectedCity)) {
+            [...branchMap.get(selectedCity)].forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+        }
+    });
+}
+
+async function deleteSupplies(event) {
+    event.preventDefault();
+
+    const supplyName = document.getElementById('supplyName').value;
+    const branchCity = document.getElementById('deleteBranchCity').value;
+    const branchProvince = document.getElementById('deleteBranchProvince').value;
+
+    try {
+        const response = await fetch('/delete-supplies', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                supplyName,
+                branchCity,
+                branchProvince
+            })
+        });
+
+        const responseData = await response.json();
+        const messageElement = document.getElementById('deleteResultMsg');
+
+        if (responseData.success) {
+            messageElement.textContent = "Supply deleted successfully!";
+            // Clear the form
+            event.target.reset();
+        } else {
+            messageElement.textContent = "Error deleting supply: " + (responseData.error || "Unknown error");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('deleteResultMsg').textContent = "Error deleting supply: " + error.message;
+    }
+}
+
 async function loadFormDropdowns() {
     // Load roles
     const roleResponse = await fetch('/roles');
@@ -61,7 +134,6 @@ async function loadFormDropdowns() {
         branchMap.get(city).add(province);
     });
 
-    // Populate city dropdown
     [...branchMap.keys()].forEach(city => {
         const option = document.createElement('option');
         option.value = city;
@@ -69,7 +141,6 @@ async function loadFormDropdowns() {
         citySelect.appendChild(option);
     });
 
-    // Update provinces when city changes
     citySelect.addEventListener('change', () => {
         const selectedCity = citySelect.value;
         provinceSelect.innerHTML = '<option value="">Select Province</option>';
@@ -145,21 +216,21 @@ async function fetchAndDisplayUsers() {
     });
 }
 
-// This function resets or initializes the demotable.
-async function resetDemotable() {
-    const response = await fetch("/initiate-demotable", {
-        method: 'POST'
-    });
-    const responseData = await response.json();
-
-    if (responseData.success) {
-        const messageElement = document.getElementById('resetResultMsg');
-        messageElement.textContent = "demotable initiated successfully!";
-        fetchTableData();
-    } else {
-        alert("Error initiating table!");
-    }
-}
+// // This function resets or initializes the demotable.
+// async function resetDemotable() {
+//     const response = await fetch("/initiate-demotable", {
+//         method: 'POST'
+//     });
+//     const responseData = await response.json();
+//
+//     if (responseData.success) {
+//         const messageElement = document.getElementById('resetResultMsg');
+//         messageElement.textContent = "demotable initiated successfully!";
+//         fetchTableData();
+//     } else {
+//         alert("Error initiating table!");
+//     }
+// }
 
 // Inserts new records into the demotable.
 async function insertDemotable(event) {
@@ -228,7 +299,7 @@ async function updateVolunteer(event) {
     console.log(updates)
     
     
-    // Remove empty fields
+    // remove empty fields
     Object.keys(updates).forEach(key => {
         if (!updates[key]) delete updates[key];
     });
@@ -293,43 +364,43 @@ async function updateVolunteer(event) {
 //     }
 // }
 
-// Counts rows in the demotable.
-// Modify the function accordingly if using different aggregate functions or procedures.
-async function countDemotable() {
-    const response = await fetch("/count-demotable", {
-        method: 'GET'
-    });
+// // Counts rows in the demotable.
+// // Modify the function accordingly if using different aggregate functions or procedures.
+// async function countDemotable() {
+//     const response = await fetch("/count-demotable", {
+//         method: 'GET'
+//     });
+//
+//     const responseData = await response.json();
+//     const messageElement = document.getElementById('countResultMsg');
+//
+//     if (responseData.success) {
+//         const tupleCount = responseData.count;
+//         messageElement.textContent = `The number of tuples in demotable: ${tupleCount}`;
+//     } else {
+//         alert("Error in count demotable!");
+//     }
+// }
 
-    const responseData = await response.json();
-    const messageElement = document.getElementById('countResultMsg');
-
-    if (responseData.success) {
-        const tupleCount = responseData.count;
-        messageElement.textContent = `The number of tuples in demotable: ${tupleCount}`;
-    } else {
-        alert("Error in count demotable!");
-    }
-}
-
-async function searchAnimal() {
-    const response = await fetch("/selection-animal", {
-        method: 'GET'
-    });
-
-    const responseData = await response.json();
-    const messageElement = document.getElementById('countResultMsg');
-
-    if (responseData.success) {
-        const tupleCount = responseData.count;
-        messageElement.textContent = `The number of tuples in demotable: ${tupleCount}`;
-    } else {
-        alert("Error in count demotable!");
-    }
-}
-
-function openAnimalSearchPage() {
-    window.location.href = "animalSearch.html";
-}
+// async function searchAnimal() {
+//     const response = await fetch("/selection-animal", {
+//         method: 'GET'
+//     });
+//
+//     const responseData = await response.json();
+//     const messageElement = document.getElementById('countResultMsg');
+//
+//     if (responseData.success) {
+//         const tupleCount = responseData.count;
+//         messageElement.textContent = `The number of tuples in demotable: ${tupleCount}`;
+//     } else {
+//         alert("Error in count demotable!");
+//     }
+// }
+//
+// function openAnimalSearchPage() {
+//     window.location.href = "animalSearch.html";
+// }
 
 
 // ---------------------------------------------------------------
@@ -337,7 +408,7 @@ function openAnimalSearchPage() {
 // Add or remove event listeners based on the desired functionalities.
 window.onload = function() {
     checkDbConnection();
-    fetchTableData();
+    // fetchTableData();
     // document.getElementById("resetDemotable").addEventListener("click", resetDemotable);
     document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
     // document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);
@@ -348,6 +419,8 @@ window.onload = function() {
     loadFormDropdowns();
     console.log("loaded form dropdowns!")
     document.getElementById('updateVolunteerForm').addEventListener('submit', updateVolunteer);
+    document.getElementById('deleteSuppliesForm').addEventListener('submit', deleteSupplies);
+    setupDeleteSuppliesForm();
 };
 
 // General function to refresh the displayed table data. 

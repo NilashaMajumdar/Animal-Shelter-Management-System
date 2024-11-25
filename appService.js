@@ -154,6 +154,38 @@ async function initiateDemotable() {
     });
 }
 
+async function deleteSupplies(supplyName, branchCity, branchProvince) {
+    console.log("appService.js: in deleteSupplies function right now")
+    return await withOracleDB(async (connection) => {
+        try {
+            console.log("appService.js: in try block will run query after")
+
+            const result = await connection.execute(
+                `DELETE FROM Supplies 
+                 WHERE supply_name = :1 
+                 AND branch_city = :2 
+                 AND branch_province = :3`,
+                [supplyName, branchCity, branchProvince],
+                { autoCommit: true }
+            );
+
+            console.log("appService.js: ran query and deleted!!")
+            console.log(`appService.js: ran delete query. Rows affected: ${result.rowsAffected}`);
+
+            const allRecords = await connection.execute(
+                `SELECT * FROM Supplies`
+            );
+
+            console.log("All remaining records in Supplies table:", allRecords.rows);
+
+            return result.rowsAffected > 0;
+        } catch (error) {
+            console.error('Error deleting supplies:', error);
+            throw error;
+        }
+    });
+}
+
 // async function insertDemotable(donorId, branchCity, branchProvince, amount) {
 //     console.log("appService.js: Starting insertDemotable with params:", { donorId, branchCity, branchProvince, amount });
 //     return await withOracleDB(async (connection) => {
@@ -368,5 +400,6 @@ module.exports = {
     updateVolunteer,
     fetchVolunteers,
     fetchAvailableRoles,
-    fetchBranches
+    fetchBranches,
+    deleteSupplies
 };
