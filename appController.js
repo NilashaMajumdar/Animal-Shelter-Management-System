@@ -169,7 +169,7 @@ router.get('/branches-donated-by-all-donors', async (req, res) => {
         const branches = await appService.getBRanchesDonatedByAllDonors();
 
         if (branches.length > 0) {
-            res.join({
+            res.json({
                 success: true,
                 data: branches,
             });
