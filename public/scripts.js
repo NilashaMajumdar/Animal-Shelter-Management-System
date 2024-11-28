@@ -217,7 +217,6 @@ async function fetchAndDisplayUsers() {
 }
 
 
-// Inserts new records into the demotable.
 async function insertDemotable(event) {
     event.preventDefault();
 
@@ -468,17 +467,150 @@ async function getBranchesDonatedByAllDonors() {
 }
 
 
+//Vicky code
+// Fetches data from the Adopter table and displays it.
+async function fetchAndDisplayProjectionResults() {
+    const tableElement = document.getElementById('projectionResultTable');
+    const tableHead = tableElement.querySelector('thead');
+    const tableBody = tableElement.querySelector('tbody');
+
+    const response = await fetch('/projectionResultTable', {
+        method: 'GET'
+    });
+
+    const responseData = await response.json();
+    const { columns, data } = responseData;
+
+    console.log("Rendering table dynamically");
+
+    // Always clear old, already fetched data before new fetching process.
+    if (tableHead) {
+        tableHead.innerHTML = '';
+    }
+
+    if (tableBody) {
+        tableBody.innerHTML = '';
+    }
+
+    const headerRow = tableHead.insertRow();
+    columns.forEach(column => {
+        const headerCell = document.createElement('th');
+        headerCell.textContent = column;
+        headerRow.appendChild(headerCell);
+    });
+
+    data.forEach(row => {
+        const tableRow = tableBody.insertRow();
+        row.forEach((cellData, index) => {
+            const cell = tableRow.insertCell(index);
+            cell.textContent = cellData;
+        });
+    });
+    console.log("table has been made successfully!");
+}
+
+async function projectionFromAdopter(event) {
+    event.preventDefault();
+
+    const checkboxes = document.querySelectorAll('input[name="adopter"]:checked');
+
+    const selectedValues = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+    console.log(selectedValues);
+
+    const response = await fetch('/projection', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            columns: selectedValues
+        })
+    });
+
+    const messageElement = document.getElementById('projectionResultMsg');
+    const responseData = await response.json();
+    fetchTableData();
+
+    if (responseData.success) {
+        messageElement.textContent = "success!";
+    } else {
+        messageElement.textContent = "Error performing projection!";
+    }
+}
+
+async function joinDonorNamesAndItems(event) {
+    event.preventDefault();
+
+    const cityValue = document.getElementById('brCity').value;
+    const provinceValue = document.getElementById('brProvince').value;
+
+    const messageElement = document.getElementById('joinResultMsg');
+
+    console.log(cityValue);
+    console.log(provinceValue);
+
+    const tableElement = document.getElementById('joinResultTable');
+    const tableBody = tableElement.querySelector('tbody');
+
+    try {
+        const response = await fetch('/join-donorNamesAndItems', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                branch_city: cityValue,
+                branch_province: provinceValue
+            })
+        });
+
+        const responseData = await response.json();
+        const tableContent = responseData.data;
+
+
+        console.log("tableContent:", tableContent);
+
+        if (tableBody) {
+            tableBody.innerHTML = '';
+        }
+
+        tableContent.forEach(user => {
+            const row = tableBody.insertRow();
+            user.forEach((field, index) => {
+                const cell = row.insertCell(index);
+                cell.textContent = field;
+            });
+        });
+
+        if (tableContent.length === 0) {
+            messageElement.textContent = `No rows found`;
+        } else if (responseData.success) {
+            messageElement.textContent = `success!`;
+        } else {
+            alert("error");
+        }
+    } catch(error) {
+        messageElement.textContent = `Invalid names!`;
+    }
+}
+
+
+function openAnimalSearchPage() {
+    window.location.href = "animalSearch.html";
+}
+function fetchTableData() {
+    fetchAndDisplayProjectionResults();
+}
+
+
+
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
 // Add or remove event listeners based on the desired functionalities.
 window.onload = function() {
     checkDbConnection();
-    // fetchTableData();
-    // document.getElementById("resetDemotable").addEventListener("click", resetDemotable);
     document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
-    // document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);
-    // document.getElementById("countDemotable").addEventListener("click", countDemotable);
-    // document.getElementById("openAnimalSearchPage").addEventListener("click", openAnimalSearchPage);
     fetchAndDisplayVolunteers();
     console.log("fetched and displayed volunteers!")
     loadFormDropdowns();
@@ -493,10 +625,17 @@ window.onload = function() {
     document.getElementById("donationHigh").addEventListener("submit", getHighDonationBranches);
     document.getElementById("aboveAverage").addEventListener("submit", getBranchesAboveAverageDonation);
     document.getElementById("donatedByAllDonor").addEventListener("submit", getBranchesDonatedByAllDonors);
+
+
+    //Vicky code
+    document.getElementById("openAnimalSearchPage").addEventListener("click", openAnimalSearchPage);
+    document.getElementById("projectionButton").addEventListener("click", projectionFromAdopter);
+    document.getElementById("inputForJoin").addEventListener("submit", joinDonorNamesAndItems);
 };
 
 // General function to refresh the displayed table data. 
 // You can invoke this after any table-modifying operation to keep consistency.
-function fetchTableData() {
-    fetchAndDisplayUsers();
-}
+// function fetchTableData() {
+//     // fetchAndDisplayUsers();
+// }
+

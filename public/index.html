@@ -170,6 +170,70 @@
     <h2>Branches Donated by All Donors</h2>
     <button onclick="getBranchesDonatedByAllDonors()">Get Branches Donated by All Donors</button>
     <div id="allDonorsBranchResult"></div>
+    <br>
+    <hr>
+    <br> <!-- ========================================================================= -->
+<!--    Vicky code starts here-->
+    <h2> Search for donor names and donated items by branch </h2>
+    <table id="joinResultTable" border="1">
+        <thead>
+        <tr>
+            <!--Table head, need to be adjusted accordingly to align with your own.-->
+            <th>donor_name</th>
+            <th>donor_item</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <br><br>
+
+<!--    <form id="inputForJoin">-->
+<!--        Branch City: <input type="text" id="brCity" placeholder="Enter Branch City" required> <br><br>-->
+<!--        Branch Province: <input type="text" id="brProvince" placeholder="Enter Branch Province" required> <br><br>-->
+
+<!--        <button type="submit"> search </button> <br>-->
+<!--    </form>-->
+    <div id="joinResultMsg"></div>
+
+    <br><hr><br> <!-- ========================================================================= -->
+
+
+    <h2>Search for an animal!</h2>
+    <button id="openAnimalSearchPage" type="button"> Search </button>
+
+    <br><hr><br> <!-- ========================================================================= -->
+
+    <h2>Adopter Search Results</h2>
+    <table id="projectionResultTable" border="1">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+
+    <p>Select the columns to view</p>
+    <form id="projectionFromAdopter">
+        <input type="checkbox" id="adopter_ID" name="adopter" value="adopter_ID">
+        <label for="adopter_ID">adopter_ID</label><br>
+
+        <input type="checkbox" id="adopter_name" name="adopter" value="adopter_name">
+        <label for="adopter_name">adopter_name</label><br>
+
+        <input type="checkbox" id="adopter_age" name="adopter" value="adopter_age">
+        <label for="adopter_age">adopter_age</label><br>
+
+        <input type="checkbox" id="adopter_address" name="adopter" value="adopter_address">
+        <label for="adopter_address">adopter_address</label><br>
+
+        <input type="checkbox" id="criminal_record" name="adopter" value="criminal_record">
+        <label for="criminal_record">criminal_record</label><br>
+
+        <button type="button" id="projectionButton">Submit</button>
+    </form>
+
+    <div id="projectionResultMsg"></div> <br>
+
+    <br><hr><br> <!-- ========================================================================= -->
 
     <!-- ===================================================================================== -->
     <!-- External JavaScript file that contains the functionality/logic for the operations above. -->

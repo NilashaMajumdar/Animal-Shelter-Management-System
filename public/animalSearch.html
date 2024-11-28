@@ -8,137 +8,63 @@
     <!-- Link to the external CSS stylesheet. Uncomment if you wish to customize or add styling. -->
     <!-- <link rel="stylesheet" href="styles.css">   -->
 
-    <title>Database Application</title>
+    <title>Search for Animals</title>
 </head>
 <body>
-    <!-- ===================================================================================== -->
-    <!-- Display the current status of the database connection. 
-         !!HERE TO HELP U DEBUGGING, NOT REQUIRED IN YOUR OWN PROJECT!!
-         -->
-    <h1>Database Connection animalSearch Status:
-        <!-- An in-line placeholder to display connection status. -->
-        <span id="dbStatus"> </span>
-        <!-- A loading GIF, will be hided once get the status. -->
-        <img id="loadingGif" class="loading-gif" src="loading_100px.gif" alt="Loading...">
-    </h1>
+<!-- ===================================================================================== -->
+<!-- Display the current status of the database connection.
+     !!HERE TO HELP U DEBUGGING, NOT REQUIRED IN YOUR OWN PROJECT!!
+     -->
+<h1>Database Connection Status:
+    <!-- An in-line placeholder to display connection status. -->
+    <span id="dbStatus"> </span>
+    <!-- A loading GIF, will be hided once get the status. -->
+    <img id="loadingGif" class="loading-gif" src="loading_100px.gif" alt="Loading...">
+</h1>
 
-    <br><hr><br> <!-- ========================================================================= -->
+<br><hr><br> <!-- ========================================================================= -->
 
-    <!-- Show 'Demotable'. 
-        Data will be fetched and inserted here dynamically using JavaScript. -->
-    <h2>Show Demotable</h2>
-    <table id="demotable" border="1">
-        <thead>
-            <tr>
-                <!--Table head, need to be adjusted accordingly to align with your own.-->
-                <th>donorID</th>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+<!-- Show tuples selected from Animal based on the condition given by the user.
+    Data will be fetched and inserted here dynamically using JavaScript. -->
+<h2>Animal Search Results</h2>
+<table id="searchResultTable" border="1">
+    <thead>
+    <tr>
+        <!--Table head, need to be adjusted accordingly to align with your own.-->
+        <th>animal_ID</th>
+        <th>animal_name</th>
+        <th>breed</th>
+        <th>age</th>
+        <th>admission_date</th>
+        <th>adoption_date</th>
+        <th>adopter_ID</th>
+        <th>cage_number</th>
+        <th>branch_city</th>
+        <th>branch_province</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
 
-    <br><hr><br> <!-- ========================================================================= -->
+<p> Enter the search conditions for the animals. Capitalize all words except column names, and separate each part with spaces (e.g.,animal_name = Bella).
+    <br><br> *To find animals that haven't been adopted, enter "adoption_date = none" or "adopter_ID = none"</p>
+<form id="animalSearch">
+    Conditions: <input type="text" id="searchConditions" placeholder="Enter the conditions" required> <br><br>
 
-    <h2>animalSearch page</h2>
-    <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
-    <button id="resetDemotable"> reset </button> <br>
-    <!-- A placeholder to display messages related to the reset operation. -->
-    <div id="resetResultMsg"></div>
+    <button type="submit"> search </button> <br>
+</form>
+<!-- A placeholder to display messages related to the search operation. -->
+<div id="searchResultMsg"></div>
 
-    <br><hr><br> <!-- ========================================================================= -->
 
-    <h2> Insert Values into DonateTable </h2>
-    <form id="insertDemotable">
-        ID: <input type="number" id="insertId" placeholder="Enter ID" required> <br><br>
-        Branch city: <input type="text" id="branchCity" placeholder="Enter branch city" maxlength="100"> <br><br>
-        Branch province: <input type="text" id="branchProvince" placeholder="Enter branch province" maxlength="100"> <br><br>
-        donated amount: <input type="number" id="donatedAmount" placeholder="Enter donated amount" maxlength="100">
+<button id="backButton">Back</button>
 
-        <button type="submit"> insert </button> <br>
-    </form>
-    <div id="insertResultMsg"></div>
 
-    <br><hr><br> <!-- ========================================================================= -->
+<br><hr><br> <!-- ========================================================================= -->
 
-    <!-- Add this to your HTML file -->
-    <div class="container">
-        <h2>Volunteer Management</h2>
-
-        <!-- Volunteer Table -->
-        <table class="table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Started Date</th>
-                <th>Branch City</th>
-                <th>Branch Province</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody id="volunteerTableBody">
-            <!-- Volunteers will be loaded here -->
-            </tbody>
-        </table>
-
-        <!-- Update Form -->
-        <form id="updateVolunteerForm" style="display: none;">
-            <h3>Update Volunteer</h3>
-
-            <div class="form-group">
-                <label for="updateVolunteerName">Name:</label>
-                <input type="text" id="updateVolunteerName" name="volunteerName" class="form-control">
-                <div id="volunteerNameError" class="error-message" style="display: none; color: red;"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="updateVolunteerRole">Role:</label>
-                <select id="updateVolunteerRole" name="volunteerRole" class="form-control">
-                    <option value="">Select Role</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="updateStartedDate">Started Date:</label>
-                <input type="date" id="updateStartedDate" name="startedDate" class="form-control">
-            </div>
-
-            <div class="form-group">
-                <label for="updateBranchCity">Branch City:</label>
-                <select id="updateBranchCity" name="branchCity" class="form-control">
-                    <option value="">Select City</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="updateBranchProvince">Branch Province:</label>
-                <select id="updateBranchProvince" name="branchProvince" class="form-control">
-                    <option value="">Select Province</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update Volunteer</button>
-            <button type="button" class="btn btn-secondary" onclick="this.form.style.display='none'">Cancel</button>
-        </form>
-    </div>
-
-    <br><hr><br> <!-- ========================================================================= -->
-
-    <h2>Count the Tuples in DemoTable</h2>
-    <button id="countDemotable"> count </button> <br><br>
-    <!-- A placeholder to display the count result. -->
-    <div id="countResultMsg"></div> <br>
-
-    <br><hr><br>
-
-    <h2>Search for an animal!</h2>
-    <button id="openAnimalSearchPage" type="button"> Search </button>
-
-    <!-- ===================================================================================== -->
-    <!-- External JavaScript file that contains the functionality/logic for the operations above. -->
-    <script src="scripts.js"></script>
+<!-- ===================================================================================== -->
+<!-- External JavaScript file that contains the functionality/logic for the operations above. -->
+<script src="animalSearch.js"></script>
 </body>
 </html>

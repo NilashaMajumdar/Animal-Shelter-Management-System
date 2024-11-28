@@ -25,6 +25,24 @@ async function initializeConnectionPool() {
     }
 }
 
+async function fetchProjectionResultFromDb() {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute('SELECT * FROM SELECTEDCOLUMNS');
+        console.log("fetched data from selectedColumns view");
+
+        const columns = result.metaData.map(meta => meta.name); // Column names
+        const rows = result.rows; // Row data
+
+        await connection.execute(`DROP VIEW SELECTEDCOLUMNS`);
+        console.log("Dropped selectedColumns view");
+        await connection.commit();
+
+        return { columns, rows};
+    }).catch(() => {
+        return { columns: [], rows: []};
+    });
+}
+
 async function fetchVolunteers() {
     console.log("appService.js: in fetch volunteers right now")
     return await withOracleDB(async (connection) => {
@@ -128,25 +146,6 @@ async function fetchDemotableFromDb() {
     });
 }
 
-async function initiateDemotable() {
-    return await withOracleDB(async (connection) => {
-        try {
-            await connection.execute(`DROP TABLE DEMOTABLE`);
-        } catch(err) {
-            console.log('Table might not exist, proceeding to create...');
-        }
-
-        const result = await connection.execute(`
-            CREATE TABLE DEMOTABLE (
-                id NUMBER PRIMARY KEY,
-                name VARCHAR2(20)
-            )
-        `);
-        return true;
-    }).catch(() => {
-        return false;
-    });
-}
 
 async function deleteSupplies(supplyName, branchCity, branchProvince) {
     console.log("appService.js: in deleteSupplies function right now")
@@ -272,8 +271,6 @@ async function updateVolunteer(volunteerId, updates) {
             bindValues.push(updates.branch_city, updates.branch_province);
         }
 
-
-        // Add volunteerId to bind values
         bindValues.push(volunteerId);
         console.log("appService.js: Inside await now");
         console.log("appService.js: will execute query soon");
@@ -429,6 +426,247 @@ async function getBRanchesDonatedByAllDonors() {
     });
 }
 
+//Vicky code
+async function initiateDemotable() {
+    return await withOracleDB(async (connection) => {
+        try {
+            await connection.execute(`DROP TABLE DEMOTABLE`);
+        } catch(err) {
+            console.log('Table might not exist, proceeding to create...');
+        }
+
+        const result = await connection.execute(`
+            CREATE TABLE DEMOTABLE (
+                id NUMBER PRIMARY KEY,
+                name VARCHAR2(20)
+            )
+        `);
+        return true;
+    }).catch(() => {
+        return false;
+    });
+}
+async function projectionFromAdopter(columns) {
+    console.log("appService.js: Inside projection function now");
+    console.log(columns);
+
+    // const sanitizedColumns = columns.filter(column => /^[a-zA-Z0-9_]+$/.test(column));
+    //
+    // if (sanitizedColumns.length !== columns.length) {
+    //     console.error('Invalid column name detected');
+    //     return false;
+    // }
+
+    return await withOracleDB(async (connection) => {
+        const query = `
+                 CREATE VIEW selectedColumns AS
+                 SELECT ${columns.join(', ')} 
+                 FROM Adopter
+                 `;
+
+        console.log(query);
+        const result = await connection.execute(
+            query,
+            {},
+            { autoCommit: true }
+        );
+
+        console.log(result.rows);
+
+        return true;
+    }).catch(() => {
+        console.error('Error executing projection from adopter');
+        return false;
+    });
+}
+
+async function joinDonorNamesAndItems (branch_city, branch_province) {
+    console.log("inside the appService.js joinDonorNamesAndItems function");
+    console.log(branch_city, branch_province);
+
+    return await withOracleDB(async (connection) => {
+        const query = `
+                 SELECT donor_name, donated_item
+                 FROM Donor, Donate
+                 WHERE Donor.donor_ID = Donate.donor_ID AND branch_city = :branch_city 
+                 AND branch_province = :branch_province
+                 `;
+
+        const result = await connection.execute(
+            query,
+            { branch_city, branch_province },
+            { autoCommit: true }
+        );
+
+        console.log(result.rows);
+
+        return result.rows;
+    }).catch(() => {
+        console.error('Error executing join between donor and donate');
+        return false;
+    });
+}
+
+
+// async function countDemotable() {
+//     return await withOracleDB(async (connection) => {
+//         const result = await connection.execute('SELECT Count(*) FROM DEMOTABLE');
+//         return result.rows[0][0];
+//     }).catch(() => {
+//         return -1;
+//     });
+// }
+
+
+
+async function searchAnimal(inputConditions) {
+    console.log("inside searchAnimal in appService.js");
+    console.log(inputConditions);
+
+    let whereClause;
+    try {
+        whereClause = parseConditions(inputConditions);
+        console.log(whereClause);
+    } catch(err) {
+        throw new Error(err.message);
+    }
+
+
+    return await withOracleDB(async (connection) => {
+
+        const result1  = await connection.execute(
+            `SELECT *
+             FROM Animal`,
+            {},
+            { autoCommit: true }
+        );
+
+        console.log("Animal contains:", result1);
+
+        const query = `
+                 SELECT *
+                 FROM Animal
+                 WHERE ${whereClause}
+                 `;
+
+        console.log("query:", query);
+
+        try {
+            const result = await connection.execute(
+                query,
+                {},
+                { autoCommit: true }
+            );
+
+            console.log(result.rows);
+
+            return result.rows;
+        } catch(err) {
+            console.log('Query execution failed!');
+            throw new Error("Query execution failed!");
+        }
+    }).catch(() => {
+        return false;
+    });
+}
+
+
+function parseConditions(conditionsToBeParsed) {
+    const animalSchema = {
+        animal_ID: "integer",
+        animal_name: "string",
+        breed: "string",
+        age: "integer",
+        admission_date: "date",
+        adoption_date: "date",
+        adopter_ID: "integer",
+        cage_number: "integer",
+        branch_city: "string",
+        branch_province: "string",
+    };
+
+    const validAttributes = Object.keys(animalSchema);
+
+    const validConditions = ["=", "<>", "<=", ">=", "!=", "<", ">"];
+
+    const validAndOr = ["AND", "OR"];
+
+    const parts = conditionsToBeParsed.split(/\s+/);
+    let whereClause = "";
+    let AndOr = false;
+
+    for (let i =0; i < parts.length; i++) {
+        const part = parts[i];
+
+        if (!AndOr) {
+            if (!validAttributes.includes(part)) {
+                throw new Error("Invalid attribute name!");
+            }
+
+            const attribute = part;
+
+            let condition = parts[++i];
+
+            if(!validConditions.includes(condition)) {
+                throw new Error("Invalid operator!");
+            }
+
+            const value = parts[++i];
+            let formattedValue = value;
+            if((attribute === "adoption_date" || attribute === "adopter_ID") && condition === "=" && value === "none") {
+                condition = "IS";
+                formattedValue = "NULL";
+            } else {
+                const expectedType = animalSchema[part];
+                if (!isValidValue(value, expectedType) || value == null) {
+                    throw new Error("Invalid value!");
+                }
+
+                if (expectedType === "string") {
+                    formattedValue = `'${value.replace(/'/g, "''")}'`;
+                } else if (expectedType === "date") {
+                    formattedValue = `TO_DATE('${value.replace(/'/g, "''")}', 'YYYY-MM-DD')`;
+                }
+            }
+
+            // if (expectedType === "string" || expectedType === "date") {
+            //     if (!/^'.*'$/.test(value)) {
+            //         formattedValue = `'${value.replace(/'/g, "''")}'`;
+            //     }
+            // }
+
+            // if(isNaN(value)) {
+            //     formattedValue =  `'${value.replace(/'/g, "''")}'`
+            // } else {
+            //     formattedValue = value;
+            // }
+
+            whereClause += `${attribute} ${condition} ${formattedValue}`;
+            AndOr = true;
+        } else {
+            if(!validAndOr.includes(part)) {
+                throw Error("there should be AND or OR");
+            }
+
+            whereClause += ` ${part} `;
+            AndOr = false;
+        }
+    }
+    return whereClause.trim();
+}
+
+function isValidValue(value, type) {
+    if (type === "integer") {
+        return typeof value === "string" && value.trim() !== "" && Number.isInteger(Number(value));
+    } else if (type === "string") {
+        return typeof value === "string" && value.length > 0;
+    } else if (type === "date") {
+        return /^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(Date.parse(value));
+    } else {
+        return false;
+    }
+}
+
 module.exports = {
     testOracleConnection,
     fetchDemotableFromDb,
@@ -443,5 +681,14 @@ module.exports = {
     countDonateByLocation,
     getBranchesWithHighDonations,
     getBranchesAboveAverageDonation,
-    getBRanchesDonatedByAllDonors
+    getBRanchesDonatedByAllDonors,
+
+
+    initiateDemotable,
+    searchAnimal,
+    projectionFromAdopter,
+    fetchProjectionResultFromDb,
+    // joinDonorNamesAndItems
+
+
 };

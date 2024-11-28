@@ -188,4 +188,106 @@ router.get('/branches-donated-by-all-donors', async (req, res) => {
     }
 });
 
+
+//vicky code
+router.get('/projectionResultTable', async (req, res) => {
+    const { columns, rows} = await appService.fetchProjectionResultFromDb();
+    res.json({ columns, data: rows });
+});
+
+// router.get('/joinResultTable', async (req, res) => {
+//     const { columns, rows} = await appService.fetchJoinResultFromDb();
+//     res.json({ columns, data: rows });
+// });
+
+router.post("/initiate-demotable", async (req, res) => {
+    const initiateResult = await appService.initiateDemotable();
+    if (initiateResult) {
+        res.json({ success: true });
+    } else {
+        res.status(500).json({ success: false });
+    }
+});
+
+// router.post("/insert-demotable", async (req, res) => {
+//     const { donorId, branchCity, branchProvince, amount } = req.body;
+//     console.log("Request Data:", { donorId, branchCity, branchProvince, amount });
+//
+//     const insertResult = await appService.insertDemotable(donorId, branchCity, branchProvince, amount);
+//     if (insertResult) {
+//         res.json({ success: true });
+//     } else {
+//         res.status(500).json({ success: false });
+//     }
+// });
+
+router.post('/join-donorNamesAndItems', async (req, res) => {
+    const { branch_city, branch_province } = req.body;
+    console.log("inside controller:", branch_city, branch_province);
+
+    const joinResult = await appService.joinDonorNamesAndItems(branch_city, branch_province);
+    if (joinResult) {
+        res.json({ success: true, data: joinResult });
+    } else {
+        res.status(500).json({ success: false });
+    }
+});
+
+// router.post("/update-name-demotable", async (req, res) => {
+//     const { oldName, newName } = req.body;
+//     const updateResult = await appService.updateNameDemotable(oldName, newName);
+//     if (updateResult) {
+//         res.json({ success: true });
+//     } else {
+//         res.status(500).json({ success: false });
+//     }
+// });
+
+// router.get('/count-demotable', async (req, res) => {
+//     const tableCount = await appService.countDemotable();
+//     if (tableCount >= 0) {
+//         res.json({
+//             success: true,
+//             count: tableCount
+//         });
+//     } else {
+//         res.status(500).json({
+//             success: false,
+//             count: tableCount
+//         });
+//     }
+// });
+
+router.post('/projection', async (req, res) => {
+    const { columns } = req.body;
+    console.log(columns);
+
+    const projectionResult = await appService.projectionFromAdopter(columns);
+    if (projectionResult) {
+        res.json({ success: true });
+    } else {
+        res.status(500).json({ success: false });
+    }
+});
+
+router.post('/selection-animal', async (req, res) => {
+    const { conditions } = req.body;
+    console.log(conditions);
+
+    try {
+        const searchResult = await appService.searchAnimal(conditions);
+        if (searchResult) {
+            res.json({ success: true, data: searchResult });
+        } else {
+            res.status(500).json({ success: false });
+        }
+    } catch(error) {
+        const errorMessage = error instanceof Error ? error.message : "An error has occurred!";
+        console.log("Error in /selection-animal route", errorMessage);
+        res.status(400).json({ error: errorMessage });
+    }
+});
+
+
+
 module.exports = router;
