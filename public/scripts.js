@@ -216,21 +216,6 @@ async function fetchAndDisplayUsers() {
     });
 }
 
-// // This function resets or initializes the demotable.
-// async function resetDemotable() {
-//     const response = await fetch("/initiate-demotable", {
-//         method: 'POST'
-//     });
-//     const responseData = await response.json();
-//
-//     if (responseData.success) {
-//         const messageElement = document.getElementById('resetResultMsg');
-//         messageElement.textContent = "demotable initiated successfully!";
-//         fetchTableData();
-//     } else {
-//         alert("Error initiating table!");
-//     }
-// }
 
 // Inserts new records into the demotable.
 async function insertDemotable(event) {
@@ -335,72 +320,152 @@ async function updateVolunteer(event) {
     }
 }
 
-// // Updates names in the demotable.
-// async function updateNameDemotable(event) {
-//     event.preventDefault();
-//
-//     const oldNameValue = document.getElementById('updateOldName').value;
-//     const newNameValue = document.getElementById('updateNewName').value;
-//
-//     const response = await fetch('/update-name-demotable', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//             oldName: oldNameValue,
-//             newName: newNameValue
-//         })
-//     });
-//
-//     const responseData = await response.json();
-//     const messageElement = document.getElementById('updateNameResultMsg');
-//
-//     if (responseData.success) {
-//         messageElement.textContent = "Name updated successfully!";
-//         fetchTableData();
-//     } else {
-//         messageElement.textContent = "Error updating name!";
-//     }
-// }
+async function fetchDonateTable() {
+    const tableElement = document.getElementById('donate-table');
+    const tableBody = tableElement.querySelector('tbody');
 
-// // Counts rows in the demotable.
-// // Modify the function accordingly if using different aggregate functions or procedures.
-// async function countDemotable() {
-//     const response = await fetch("/count-demotable", {
-//         method: 'GET'
-//     });
-//
-//     const responseData = await response.json();
-//     const messageElement = document.getElementById('countResultMsg');
-//
-//     if (responseData.success) {
-//         const tupleCount = responseData.count;
-//         messageElement.textContent = `The number of tuples in demotable: ${tupleCount}`;
-//     } else {
-//         alert("Error in count demotable!");
-//     }
-// }
+    const response = await fetch('/donate-table', {
+        method: 'GET'
+    });
 
-// async function searchAnimal() {
-//     const response = await fetch("/selection-animal", {
-//         method: 'GET'
-//     });
-//
-//     const responseData = await response.json();
-//     const messageElement = document.getElementById('countResultMsg');
-//
-//     if (responseData.success) {
-//         const tupleCount = responseData.count;
-//         messageElement.textContent = `The number of tuples in demotable: ${tupleCount}`;
-//     } else {
-//         alert("Error in count demotable!");
-//     }
-// }
-//
-// function openAnimalSearchPage() {
-//     window.location.href = "animalSearch.html";
-// }
+    const responseData = await response.json();
+    const donatetableContent = responseData.data;
+
+    // Always clear old, already fetched data before new fetching process.
+    if (tableBody) {
+        tableBody.innerHTML = '';
+    }
+
+    donatetableContent.forEach(user => {
+        const row = tableBody.insertRow();
+        user.forEach((field, index) => {
+            const cell = row.insertCell(index);
+            cell.textContent = field;
+        });
+    });
+}
+
+async function getDonationCount() {
+    const branchCity = document.getElementById('branch_city').value.trim();
+    const branchProvince = document.getElementById('branch_province').value.trim();
+    const resultDiv = document.getElementById('donationResult');
+
+    if (!branchCity || !branchProvince) {
+        resultDiv.textContent = 'Both branch city and province are required.';
+        resultDiv.style.color = 'red';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/donate-count-by-branch?branch_city=${branchCity}&branch_province=${branchProvince}`);
+        const data = await response.json();
+
+        if (data.success) {
+            const count = data.data.donation_count;
+            resultDiv.textContent = `Donation count for ${branchCity}, ${branchProvince}: ${count}`;
+        } else {
+            resultDiv.textContent = data.message;
+            resultDiv.style.color = 'red';
+        }
+    } catch (error) {
+        console.error('Error fetching donation count:', error);
+        resultDiv.textContent = 'Failed to fetch donation count. Please try again later.';
+        resultDiv.style.color = 'red';
+    }
+}
+
+
+async function getHighDonationBranches() {
+    const resultDiv = document.getElementById('branchDonationResult');
+
+    try {
+        const response = await fetch('/high-donation-branches');
+        const data = await response.json();
+
+        if (data.success) {
+            const branches = data.data;
+            if (branches.length > 0) {
+                const resultHtml = branches.map(
+                    ([branch_city, branch_province, total_donation]) =>
+                        `<li>${branch_city}, ${branch_province} - Total Donations: ${total_donation}</li>`
+                ).join('');
+                resultDiv.innerHTML = `<ul>${resultHtml}</ul>`;
+            } else {
+                resultDiv.textContent = 'No branches found with donations exceeding amount 50.';
+                resultDiv.style.color = 'red';
+            }
+        } else {
+            resultDiv.textContent = data.message || 'An error occurred.';
+            resultDiv.style.color = 'red';
+        }
+    } catch (error) {
+        console.error('Error fetching high donation branches:', error);
+        resultDiv.textContent = 'Failed to fetch high donation branches. Please try again later.';
+        resultDiv.style.color = 'red';
+    }
+}
+
+// Fetches branches with above-average donations.
+async function getBranchesAboveAverageDonation() {
+    const resultDiv = document.getElementById('averageDonationResult');
+
+    try {
+        const response = await fetch('/branches-above-average-donation');
+        const data = await response.json();
+
+        if (data.success) {
+            const branches = data.data;
+            if (branches.length > 0) {
+                const resultHtml = branches.map(
+                    ([branch_city, branch_province, avg_donation]) =>
+                        `<li>${branch_city}, ${branch_province} - Average Donation: ${avg_donation.toFixed(2)}</li>`
+                ).join('');
+                resultDiv.innerHTML = `<ul>${resultHtml}</ul>`;
+            } else {
+                resultDiv.textContent = 'No branches found with above-average donations.';
+                resultDiv.style.color = 'red';
+            }
+        } else {
+            resultDiv.textContent = data.message || 'An error occurred.';
+            resultDiv.style.color = 'red';
+        }
+    } catch (error) {
+        console.error('Error fetching branches with above-average donations:', error);
+        resultDiv.textContent = 'Failed to fetch data. Please try again later.';
+        resultDiv.style.color = 'red';
+    }
+}
+
+// Fetches branches that have received donations from all donors.
+async function getBranchesDonatedByAllDonors() {
+    const resultDiv = document.getElementById('allDonorsBranchResult');
+
+    try {
+        const response = await fetch('/branches-donated-by-all-donors');
+        const data = await response.json();
+
+        if (data.success) {
+            const branches = data.data;
+            if (branches.length > 0) {
+                const resultHtml = branches.map(
+                    ([branch_city, branch_province]) =>
+                        `<li>${branch_city}, ${branch_province}</li>`
+                ).join('');
+                resultDiv.innerHTML = `<ul>Branches donated by all donors:<br>${resultHtml}</ul>`;
+            } else {
+                resultDiv.textContent = 'No branches found that all donors have donated to.';
+                resultDiv.style.color = 'red';
+            }
+        } else {
+            resultDiv.textContent = data.message || 'No branches found.';
+            resultDiv.style.color = 'red';
+        }
+    } catch (error) {
+        console.error('Error fetching branches donated by all donors:', error);
+        resultDiv.textContent = 'Failed to fetch data. Please try again later.';
+        resultDiv.style.color = 'red';
+    }
+}
 
 
 // ---------------------------------------------------------------
@@ -421,6 +486,13 @@ window.onload = function() {
     document.getElementById('updateVolunteerForm').addEventListener('submit', updateVolunteer);
     document.getElementById('deleteSuppliesForm').addEventListener('submit', deleteSupplies);
     setupDeleteSuppliesForm();
+
+    //Wendy code
+    fetchDonateTable();
+    document.getElementById("donationCountFrom").addEventListener("submit", getDonationCount);
+    document.getElementById("donationHigh").addEventListener("submit", getHighDonationBranches);
+    document.getElementById("aboveAverage").addEventListener("submit", getBranchesAboveAverageDonation);
+    document.getElementById("donatedByAllDonor").addEventListener("submit", getBranchesDonatedByAllDonors);
 };
 
 // General function to refresh the displayed table data. 

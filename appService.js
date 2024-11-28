@@ -1,10 +1,4 @@
 
-
-
-// export async function updateVolunteer() {
-//
-// }
-
 const oracledb = require('oracledb');
 const loadEnvFile = require('./utils/envUtil');
 
@@ -186,64 +180,6 @@ async function deleteSupplies(supplyName, branchCity, branchProvince) {
     });
 }
 
-// async function insertDemotable(donorId, branchCity, branchProvince, amount) {
-//     console.log("appService.js: Starting insertDemotable with params:", { donorId, branchCity, branchProvince, amount });
-//     return await withOracleDB(async (connection) => {
-//         console.log("appService.js: In insertDemoTable function")
-//         console.log("appService.js: Will check if donorID exists or not in Donor table using SELECT now")
-//
-//         const donorIdCheck = await connection.execute(
-//             `SELECT 1 FROM Donor WHERE donor_ID = :donorId`,
-//             [donorId],
-//             { autoCommit: true }
-//         );
-//
-//         console.log("appService.js: Fetched donorID ")
-//
-//         if(!donorIdCheck) {
-//             throw error(
-//                 "A donor with this ID does not exist"
-//             )
-//         }
-//
-//         console.log("appService.js: non existant id error clause not thrown")
-//         console.log("appService.js: Will check if branch city and province exists in Branch table using SELECT now")
-//
-//
-//         const cityAndProvinceCheck = await connection.execute(
-//             `SELECT 1 FROM Branch WHERE city = :branchCity AND province = :branchProvince`,
-//             [branchCity, branchProvince],
-//             { autoCommit: true }
-//         );
-//
-//         console.log("appService.js: Fetched branch details")
-//
-//         if (cityAndProvinceCheck.rows.length === 0) {
-//             throw new Error(`There is no branch in ${branchCity}, ${branchProvince}!`);
-//         }
-//         // if(!cityAndProvinceCheck) {
-//         //     throw error(
-//         //         "There is no branch in" + branchCity + ", " + branchProvince + "!"
-//         //     )
-//         // }
-//         console.log("appService.js: Branch non existant error not thrown")
-//         console.log("appService.js: Now we will try to insert the record into given DONATE table")
-//
-//
-//         const result = await connection.execute(
-//             `INSERT INTO Donate (donor_ID, branch_city, branch_province, amount) VALUES (:donorId, :branchCity, :branchProvince, :amount)`,
-//             [donorId, branchCity, branchProvince, amount],
-//             { autoCommit: true }
-//         );
-//
-//         console.log("appService.js: YAYY INSERTION IS DONE!!")
-//
-//         return result.rowsAffected && result.rowsAffected > 0;
-//     }).catch((error) => {
-//         console.error(error.message);
-//         return false;
-//     });
-// }
 async function insertDemotable(donorId, branchCity, branchProvince, amount) {
     console.log("appService.js: Starting insertDemotable with params:", { donorId, branchCity, branchProvince, amount });
     return await withOracleDB(async (connection) => {
@@ -305,21 +241,6 @@ async function insertDemotable(donorId, branchCity, branchProvince, amount) {
         return false;
     });
 }
-// async function updateNameDemotable(oldName, newName) {
-//     console.log("appService.js: Starting update with params:", { donorId, branchCity, branchProvince, amount });
-//
-//     return await withOracleDB(async (connection) => {
-//         const result = await connection.execute(
-//             `UPDATE DEMOTABLE SET name=:newName where name=:oldName`,
-//             [newName, oldName],
-//             { autoCommit: true }
-//         );
-//
-//         return result.rowsAffected && result.rowsAffected > 0;
-//     }).catch(() => {
-//         return false;
-//     });
-// }
 
 async function updateVolunteer(volunteerId, updates) {
     console.log("appService.js: Inside updateVolunteer function now");
@@ -381,25 +302,146 @@ async function updateVolunteer(volunteerId, updates) {
     });
 }
 
-async function countDemotable() {
+async function fetchDonateFromDb() {
     return await withOracleDB(async (connection) => {
-        const result = await connection.execute('SELECT Count(*) FROM DEMOTABLE');
-        return result.rows[0][0];
+        const result = await connection.execute('SELECT * FROM Donate');
+        return result.rows;
     }).catch(() => {
-        return -1;
+        return [];
+    });
+}
+
+// Function get the city and province to know the branch and return the total donates in that branch
+async function countDonateByLocation(branch_city, branch_province) {
+    console.log(`AppService - Received Query: ${branch_city}, ${branch_province}`);
+    return await withOracleDB(async (connection) => {
+        try {
+            const result = await connection.execute(
+                `SELECT COUNT(*) AS donation_count
+                 FROM Donate
+                 WHERE branch_city = :branch_city
+                   AND branch_province = :branch_province
+                 GROUP BY branch_city, branch_province`,
+                {
+                    branch_city: branch_city,
+                    branch_province: branch_province,
+                }
+            );
+
+            console.log('AppService - Query Result:', result.rows);
+
+            if (result.rows.length > 0) {
+                // Extract the donation_count value from the query result.
+                const donationCount = result.rows[0][0];
+                return donationCount;
+            } else {
+                return 0; // No donations found
+            }
+        } catch (err) {
+            console.error('AppService - Query Error:', err.message);
+            throw err;
+        }
+    });
+}
+
+// Function to get the branches with total donate amount larger than 50. Return branches city and province with total amount
+async function getBranchesWithHighDonations() {
+    console.log('AppService - Fetching branches with high donations.');
+    return await withOracleDB(async (connection) => {
+        try {
+            const result = await connection.execute(
+                `SELECT branch_city, branch_province, SUM(amount) AS total_donations
+                 FROM Donate
+                 GROUP BY branch_city, branch_province
+                 HAVING SUM(amount) > 50`
+            );
+
+            console.log('AppService - Query Result:', result.rows);
+
+            if (result.rows.length > 0) {
+                return result.rows;
+            } else {
+                return [];
+            }
+        } catch (err) {
+            console.error('AppService - Query Error', err.message);
+            throw err;
+        }
+    });
+}
+
+// Function to get the branches with average donation in branch larger than the overall average donation across all branches
+// Return: branch city and province with average donation amount
+async function getBranchesAboveAverageDonation() {
+    console.log('AppService - Querying branches with above-average donation amounts');
+    return await withOracleDB(async (connection) => {
+        try {
+            const result = await connection.execute(
+                `SELECT branch_city, branch_province, AVG(amount) AS avg_donation
+                 FROM Donate
+                 GROUP BY branch_city, branch_province
+                 HAVING AVG(amount) > (SELECT AVG(amount) FROM Donate)`
+            );
+
+            console.log('AppService - Query Result:', result.rows);
+
+            if (result.rows.length > 0) {
+                return result.rows;
+            } else {
+                return [];
+            }
+        } catch (err) {
+            console.error('AppService - Query Error', err.message);
+            throw err;
+        }
+    });
+}
+
+// Function get the name of branches which have donation from all donor in the database
+// Return the branch city and province
+async function getBRanchesDonatedByAllDonors() {
+    console.log('AppService - Querying branches donated by all donors');
+    return await withOracleDB(async (connection) => {
+        try {
+            const result = await connection.execute(
+                `SELECT DISTINCT D1.branch_city, D1.branch_province
+                 FROM Donate D1
+                 WHERE NOT EXISTS (SELECT donor_ID
+                                   FROM Donate D2
+                                   WHERE NOT EXISTS(SELECT 1
+                                                    FROM Donate D3
+                                                    WHERE D3.donor_ID = D2.donor_ID
+                                                      AND D3.branch_city = D1.branch_city
+                                                      AND D3.branch_province = D1.branch_province))`
+            );
+
+            console.log('AppService - Query Result:', result.rows);
+
+            if (result.rows.length > 0) {
+                return result.rows;
+            } else {
+                return [];
+            }
+        } catch (err) {
+            console.error('AppService - Query Error', err.message);
+            throw err;
+        }
     });
 }
 
 module.exports = {
     testOracleConnection,
     fetchDemotableFromDb,
-    initiateDemotable, 
-    insertDemotable, 
-    // updateNameDemotable,
-    countDemotable,
+    insertDemotable,
     updateVolunteer,
     fetchVolunteers,
     fetchAvailableRoles,
     fetchBranches,
-    deleteSupplies
+    deleteSupplies,
+
+    fetchDonateFromDb,
+    countDonateByLocation,
+    getBranchesWithHighDonations,
+    getBranchesAboveAverageDonation,
+    getBRanchesDonatedByAllDonors
 };

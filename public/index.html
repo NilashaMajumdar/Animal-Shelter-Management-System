@@ -24,31 +24,6 @@
 
     <br><hr><br> <!-- ========================================================================= -->
 
-<!--    &lt;!&ndash; Show 'Demotable'.-->
-<!--        Data will be fetched and inserted here dynamically using JavaScript. &ndash;&gt;-->
-<!--    <h2>Show Demotable</h2>-->
-<!--    <table id="demotable" border="1">-->
-<!--        <thead>-->
-<!--            <tr>-->
-<!--                &lt;!&ndash;Table head, need to be adjusted accordingly to align with your own.&ndash;&gt;-->
-<!--                <th>donorID</th>-->
-<!--                <th>Name</th>-->
-<!--            </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        </tbody>-->
-<!--    </table>-->
-
-<!--    <br><hr><br> &lt;!&ndash; ========================================================================= &ndash;&gt;-->
-
-<!--    <h2>Reset Demotable</h2>-->
-<!--    <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>-->
-<!--    <button id="resetDemotable"> reset </button> <br>-->
-<!--    &lt;!&ndash; A placeholder to display messages related to the reset operation. &ndash;&gt;-->
-<!--    <div id="resetResultMsg"></div>-->
-
-<!--    <br><hr><br> &lt;!&ndash; ========================================================================= &ndash;&gt;-->
-
     <h2> Insert Values into DonateTable </h2>
     <form id="insertDemotable">
         ID: <input type="number" id="insertId" placeholder="Enter ID" required> <br><br>
@@ -148,29 +123,53 @@
     </form>
     <div id="deleteResultMsg"></div>
 
-
-    <!--    <h2>Update Name in DemoTable</h2>-->
-<!--    <p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>-->
-<!--    <form id="updataNameDemotable">-->
-<!--        Old Name: <input type="text" id="updateOldName" placeholder="Enter Old Name" required> <br><br>-->
-<!--        New Name: <input type="text" id="updateNewName" placeholder="Enter New Name" maxlength="20"> <br><br>-->
-
-<!--        <button type="submit"> update </button> <br>-->
-<!--    </form>-->
-<!--    &lt;!&ndash; A placeholder to display messages related to the update operation. &ndash;&gt;-->
-<!--    <div id="updateNameResultMsg"></div>-->
-
     <br><hr><br> <!-- ========================================================================= -->
+    <h2>Show Donate</h2>
+    <table id="donate-table" border="1">
+        <thead>
+        <tr>
+            <!--Table head, need to be adjusted accordingly to align with your own.-->
+            <th>ID</th>
+            <th>Branch City</th>
+            <th>Branch Province</th>
+            <th>Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <br><hr><br> <!-- ========================================================================= -->
+    <!-- New section for fetching donation counts based on location -->
+    <h2>Get Donation Count by Location</h2>
+    <form id="donationCountForm" onsubmit="event.preventDefault(); getDonationCount();">
+        Branch City: <input type="text" id="branch_city" placeholder="Enter branch city" required> <br><br>
+        Branch Province: <input type="text" id="branch_province" placeholder="Enter branch province" required> <br><br>
+        <button type="submit">Get Donation Count</button>
+        <br>
+    </form>
+    <div id="donationResult"></div>
 
-<!--    <h2>Count the Tuples in DemoTable</h2>-->
-<!--    <button id="countDemotable"> count </button> <br><br>-->
-<!--    &lt;!&ndash; A placeholder to display the count result. &ndash;&gt;-->
-<!--    <div id="countResultMsg"></div> <br>-->
+    <br>
+    <hr>
+    <br> <!-- ========================================================================= -->
+    <h2>Branches with High Total Donations</h2>
+    <button onclick="getHighDonationBranches()">Get Branches with Donations Amount Over 50</button>
+    <div id="branchDonationResult"></div>
 
-<!--    <br><hr><br>-->
 
-<!--    <h2>Search for an animal!</h2>-->
-<!--    <button id="openAnimalSearchPage" type="button"> Search </button>-->
+    <br>
+    <hr>
+    <br> <!-- ========================================================================= -->
+    <h2>Branches with Average Donation Above Total Average Donations</h2>
+    <button onclick="getBranchesAboveAverageDonation()">Get Above-Average Donations</button>
+    <div id="averageDonationResult"></div>
+
+    <br>
+    <hr>
+    <br> <!-- ========================================================================= -->
+    <h2>Branches Donated by All Donors</h2>
+    <button onclick="getBranchesDonatedByAllDonors()">Get Branches Donated by All Donors</button>
+    <div id="allDonorsBranchResult"></div>
 
     <!-- ===================================================================================== -->
     <!-- External JavaScript file that contains the functionality/logic for the operations above. -->
