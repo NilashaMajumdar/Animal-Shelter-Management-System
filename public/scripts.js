@@ -636,7 +636,7 @@ window.onload = async function() {
 
         document.getElementById("openAnimalSearchPage").addEventListener("click", openAnimalSearchPage);
         document.getElementById("projectionButton").addEventListener("click", projectionFromAdopter);
-        // document.getElementById("inputForJoin").addEventListener("submit", joinDonorNamesAndItems);
+        document.getElementById("inputForJoin").addEventListener("submit", joinDonorNamesAndItems);
 
         await fetchAndDisplayVolunteers();
         console.log("fetched and displayed volunteers!")

@@ -688,7 +688,7 @@ module.exports = {
     projectionFromAdopter,
     searchAnimal,
     fetchProjectionResultFromDb,
-    // joinDonorNamesAndItems
+    joinDonorNamesAndItems
 
 
 };
