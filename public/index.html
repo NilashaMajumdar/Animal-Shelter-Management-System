@@ -141,7 +141,7 @@
     <br><hr><br> <!-- ========================================================================= -->
     <!-- New section for fetching donation counts based on location -->
     <h2>Get Donation Count by Location</h2>
-    <form id="donationCountForm" onsubmit="event.preventDefault(); getDonationCount();">
+    <form id="donationCountFrom" onsubmit="event.preventDefault(); getDonationCount();">
         Branch City: <input type="text" id="branch_city" placeholder="Enter branch city" required> <br><br>
         Branch Province: <input type="text" id="branch_province" placeholder="Enter branch province" required> <br><br>
         <button type="submit">Get Donation Count</button>
@@ -153,6 +153,7 @@
     <hr>
     <br> <!-- ========================================================================= -->
     <h2>Branches with High Total Donations</h2>
+    <form id="donationHigh" style="display:none;"></form>
     <button onclick="getHighDonationBranches()">Get Branches with Donations Amount Over 50</button>
     <div id="branchDonationResult"></div>
 
@@ -161,6 +162,7 @@
     <hr>
     <br> <!-- ========================================================================= -->
     <h2>Branches with Average Donation Above Total Average Donations</h2>
+    <form id="aboveAverage" style="display:none;"></form>
     <button onclick="getBranchesAboveAverageDonation()">Get Above-Average Donations</button>
     <div id="averageDonationResult"></div>
 
@@ -168,6 +170,7 @@
     <hr>
     <br> <!-- ========================================================================= -->
     <h2>Branches Donated by All Donors</h2>
+    <form id="donatedByAllDonor" style="display:none;"></form>
     <button onclick="getBranchesDonatedByAllDonors()">Get Branches Donated by All Donors</button>
     <div id="allDonorsBranchResult"></div>
     <br>
