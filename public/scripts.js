@@ -72,6 +72,31 @@ async function setupDeleteSuppliesForm() {
     });
 }
 
+async function fetchSuppliesTable() {
+    const tableElement = document.getElementById('supplies-table');
+    const tableBody = tableElement.querySelector('tbody');
+
+    const response = await fetch('/supplies-table', {
+        method: 'GET'
+    });
+
+    const responseData = await response.json();
+    const suppliestableContent = responseData.data;
+
+    // Always clear old, already fetched data before new fetching process.
+    if (tableBody) {
+        tableBody.innerHTML = '';
+    }
+
+    suppliestableContent.forEach(user => {
+        const row = tableBody.insertRow();
+        user.forEach((field, index) => {
+            const cell = row.insertCell(index);
+            cell.textContent = field;
+        });
+    });
+}
+
 async function deleteSupplies(event) {
     event.preventDefault();
 
@@ -646,6 +671,7 @@ window.onload = async function() {
         await loadFormDropdowns();
         console.log("loaded form dropdowns!")
         document.getElementById('updateVolunteerForm').addEventListener('submit', updateVolunteer);
+        document.getElementById('updateSuppliesTable').addEventListener('click', fetchSuppliesTable);
         document.getElementById('deleteSuppliesForm').addEventListener('submit', deleteSupplies);
         setupDeleteSuppliesForm();
 

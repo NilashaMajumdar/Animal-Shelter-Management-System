@@ -41,6 +41,11 @@ router.post("/insert-demotable", async (req, res) => {
     }
 });
 
+router.get('/supplies-table', async (req, res) => {
+    const tableContent = await appService.fetchSuppliesFromDb();
+    res.json({data: tableContent});
+});
+
 router.delete('/delete-supplies', async (req, res) => {
     try {
         const { supplyName, branchCity, branchProvince } = req.body;

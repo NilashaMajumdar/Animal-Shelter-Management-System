@@ -146,6 +146,15 @@ async function fetchDemotableFromDb() {
     });
 }
 
+async function fetchSuppliesFromDb() {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute('SELECT * FROM Supplies');
+        return result.rows;
+    }).catch(() => {
+        return [];
+    });
+}
+
 
 async function deleteSupplies(supplyName, branchCity, branchProvince) {
     console.log("appService.js: in deleteSupplies function right now")
@@ -675,6 +684,7 @@ module.exports = {
     fetchVolunteers,
     fetchAvailableRoles,
     fetchBranches,
+    fetchSuppliesFromDb,
     deleteSupplies,
 
     fetchDonateFromDb,
