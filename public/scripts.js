@@ -252,19 +252,40 @@ async function insertDemotable(event) {
         })
     });
     console.log("fetched!!")
-    const responseText = await response.text();
-    console.log("scripts.js: Response body:", responseText);
-
-    const responseData = await response.json();
     const messageElement = document.getElementById('insertResultMsg');
+    try {
+        const responseData = await response.json();
 
-    if (responseData.success) {
-        messageElement.textContent = "Data inserted successfully! yay";
-        fetchTableData();
-    } else {
-        messageElement.textContent = "Error inserting data!";
+        if (responseData.success) {
+            messageElement.textContent = "Data inserted successfully! yay";
+            // fetchTableData();
+        } else {
+            messageElement.textContent = "Error inserting data!";
+        }
+    } catch (error) {
+        console.error('Error parsing response:', error);
+        messageElement.textContent = "Error processing server response";
     }
 }
+
+    // const responseText = await response.text();
+    // console.log("scripts.js: Response body:", responseText);
+
+
+//     try {
+//         const responseData = await response.json();
+//     } catch (err) {
+//
+//     }
+//     // const messageElement = document.getElementById('insertResultMsg');
+//
+//     if (responseData.success) {
+//         messageElement.textContent = "Data inserted successfully! yay";
+//         fetchTableData();
+//     } else {
+//         messageElement.textContent = "Error inserting data!";
+//     }
+// }
 async function updateVolunteer(event) {
     console.log("script.js: In updateVolunteer function now")
 
