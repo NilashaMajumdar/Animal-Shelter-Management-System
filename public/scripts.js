@@ -474,16 +474,13 @@ async function getBranchesDonatedByAllDonors() {
                 resultDiv.innerHTML = `<ul>Branches donated by all donors:<br>${resultHtml}</ul>`;
             } else {
                 resultDiv.textContent = 'No branches found that all donors have donated to.';
-                resultDiv.style.color = 'red';
             }
         } else {
             resultDiv.textContent = data.message || 'No branches found.';
-            resultDiv.style.color = 'red';
         }
     } catch (error) {
         console.error('Error fetching branches donated by all donors:', error);
         resultDiv.textContent = 'Failed to fetch data. Please try again later.';
-        resultDiv.style.color = 'red';
     }
 }
 
