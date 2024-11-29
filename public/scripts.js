@@ -650,6 +650,7 @@ window.onload = async function() {
 
         // //Wendy code
         fetchDonateTable();
+        document.getElementById("updateDonateTable").addEventListener("click", fetchDonateTable);
         document.getElementById("donationCountFrom").addEventListener("submit", getDonationCount);
         document.getElementById("donationHigh").addEventListener("submit", getHighDonationBranches);
         document.getElementById("aboveAverage").addEventListener("submit", getBranchesAboveAverageDonation);
