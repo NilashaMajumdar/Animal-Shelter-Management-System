@@ -685,8 +685,8 @@ module.exports = {
 
 
     initiateDemotable,
-    searchAnimal,
     projectionFromAdopter,
+    searchAnimal,
     fetchProjectionResultFromDb,
     // joinDonorNamesAndItems
 

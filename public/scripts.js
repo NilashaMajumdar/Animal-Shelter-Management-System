@@ -608,29 +608,40 @@ function fetchTableData() {
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
 // Add or remove event listeners based on the desired functionalities.
-window.onload = function() {
-    checkDbConnection();
-    document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
-    fetchAndDisplayVolunteers();
-    console.log("fetched and displayed volunteers!")
-    loadFormDropdowns();
-    console.log("loaded form dropdowns!")
-    document.getElementById('updateVolunteerForm').addEventListener('submit', updateVolunteer);
-    document.getElementById('deleteSuppliesForm').addEventListener('submit', deleteSupplies);
-    setupDeleteSuppliesForm();
+window.onload = async function() {
+    try {
+        console.log("starting window function now")
+        await checkDbConnection();
 
-    //Wendy code
-    fetchDonateTable();
-    document.getElementById("donationCountFrom").addEventListener("submit", getDonationCount);
-    document.getElementById("donationHigh").addEventListener("submit", getHighDonationBranches);
-    document.getElementById("aboveAverage").addEventListener("submit", getBranchesAboveAverageDonation);
-    document.getElementById("donatedByAllDonor").addEventListener("submit", getBranchesDonatedByAllDonors);
+        document.getElementById("openAnimalSearchPage").addEventListener("click", openAnimalSearchPage);
+        document.getElementById("projectionButton").addEventListener("click", projectionFromAdopter);
+        // document.getElementById("inputForJoin").addEventListener("submit", joinDonorNamesAndItems);
+
+        await fetchAndDisplayVolunteers();
+        console.log("fetched and displayed volunteers!")
+
+        document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
+        await loadFormDropdowns();
+        console.log("loaded form dropdowns!")
+        document.getElementById('updateVolunteerForm').addEventListener('submit', updateVolunteer);
+        document.getElementById('deleteSuppliesForm').addEventListener('submit', deleteSupplies);
+        setupDeleteSuppliesForm();
+
+        // //Wendy code
+        fetchDonateTable();
+        document.getElementById("donationCountFrom").addEventListener("submit", getDonationCount);
+        document.getElementById("donationHigh").addEventListener("submit", getHighDonationBranches);
+        document.getElementById("aboveAverage").addEventListener("submit", getBranchesAboveAverageDonation);
+        document.getElementById("donatedByAllDonor").addEventListener("submit", getBranchesDonatedByAllDonors);
 
 
-    //Vicky code
-    document.getElementById("openAnimalSearchPage").addEventListener("click", openAnimalSearchPage);
-    document.getElementById("projectionButton").addEventListener("click", projectionFromAdopter);
-    document.getElementById("inputForJoin").addEventListener("submit", joinDonorNamesAndItems);
+        //Vicky code
+
+    } catch (error) {
+        console.error("Initialization error:", error);
+
+    }
+
 };
 
 // General function to refresh the displayed table data. 
