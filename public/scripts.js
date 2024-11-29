@@ -56,8 +56,6 @@ async function setupDeleteSuppliesForm() {
         option.textContent = city;
         citySelect.appendChild(option);
     });
-
-    // Update provinces when city changes
     citySelect.addEventListener('change', () => {
         const selectedCity = citySelect.value;
         provinceSelect.innerHTML = '<option value="">Select Province</option>';
@@ -134,7 +132,6 @@ async function deleteSupplies(event) {
 }
 
 async function loadFormDropdowns() {
-    // Load roles
     const roleResponse = await fetch('/roles');
     const roles = await roleResponse.json();
     const roleSelect = document.getElementById('updateVolunteerRole');
@@ -182,7 +179,9 @@ async function loadFormDropdowns() {
 async function prepareUpdateForm(volunteerId) {
     const updateForm = document.getElementById('updateVolunteerForm');
     updateForm.style.display = 'block';
+    console.log("reached till here")
     updateForm.dataset.volunteerId = volunteerId;
+    console.log(volunteerId);
 
     // Clear previous values
     document.getElementById('updateVolunteerName').value = '';
@@ -256,13 +255,13 @@ async function insertDemotable(event) {
 
     console.log("scripts.js: fetched all the values")
     console.log("scripts.js: awaiting fetch after this statement")
-    const payload = {
+    const details = {
         donorId,
         branchCity,
         branchProvince,
         amount
     };
-    console.log(payload)
+    console.log(details)
 
     const response = await fetch('/insert-demotable', {
         method: 'POST',
@@ -293,26 +292,9 @@ async function insertDemotable(event) {
     }
 }
 
-    // const responseText = await response.text();
-    // console.log("scripts.js: Response body:", responseText);
 
-
-//     try {
-//         const responseData = await response.json();
-//     } catch (err) {
-//
-//     }
-//     // const messageElement = document.getElementById('insertResultMsg');
-//
-//     if (responseData.success) {
-//         messageElement.textContent = "Data inserted successfully! yay";
-//         fetchTableData();
-//     } else {
-//         messageElement.textContent = "Error inserting data!";
-//     }
-// }
 async function updateVolunteer(event) {
-    console.log("script.js: In updateVolunteer function now")
+    console.log("script.js: in updateVolunteer function now")
 
     event.preventDefault();
     const form = event.target;
@@ -325,7 +307,7 @@ async function updateVolunteer(event) {
         branch_city: document.getElementById('updateBranchCity').value,
         branch_province: document.getElementById('updateBranchProvince').value
     };
-    console.log("script.js: Fetched all updating values")
+    console.log("script.js: fetched all updating values")
     console.log(updates)
     
     
@@ -334,7 +316,7 @@ async function updateVolunteer(event) {
         if (!updates[key]) delete updates[key];
     });
 
-    console.log("script.js: Gonna try fetch after this state")
+    console.log("script.js: goonna try fetch after this state")
 
 
     try {
@@ -659,11 +641,12 @@ window.onload = async function() {
     try {
         console.log("starting window function now")
         await checkDbConnection();
-
+        //Vicky code
         document.getElementById("openAnimalSearchPage").addEventListener("click", openAnimalSearchPage);
         document.getElementById("projectionButton").addEventListener("click", projectionFromAdopter);
         document.getElementById("inputForJoin").addEventListener("submit", joinDonorNamesAndItems);
 
+        // nilasha code
         await fetchAndDisplayVolunteers();
         console.log("fetched and displayed volunteers!")
 
@@ -684,7 +667,6 @@ window.onload = async function() {
         document.getElementById("donatedByAllDonor").addEventListener("submit", getBranchesDonatedByAllDonors);
 
 
-        //Vicky code
 
     } catch (error) {
         console.error("Initialization error:", error);

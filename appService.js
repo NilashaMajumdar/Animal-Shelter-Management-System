@@ -61,10 +61,10 @@ async function fetchVolunteers() {
 }
 
 async function fetchAvailableRoles() {
-    console.log("appService.js: in fetch available rorws right now")
+    console.log("appService.js: in fetch available roles rn")
     return await withOracleDB(async (connection) => {
         const result = await connection.execute('SELECT role FROM Role');
-        console.log("appService.js: fetched available rorws!!!")
+        console.log("appService.js: fetched available roles!!!")
         return result.rows;
     }).catch((error) => {
         console.error('Error fetching roles:', error);
@@ -73,7 +73,7 @@ async function fetchAvailableRoles() {
 }
 
 async function fetchBranches() {
-    console.log("appService.js: in fetch branches right now")
+    console.log("appService.js: in fetch branches rn")
     return await withOracleDB(async (connection) => {
         const result = await connection.execute('SELECT city, province FROM Branch');
         console.log("appService.js: fetched branches!!!")
@@ -172,13 +172,13 @@ async function deleteSupplies(supplyName, branchCity, branchProvince) {
             );
 
             console.log("appService.js: ran query and deleted!!")
-            console.log(`appService.js: ran delete query. Rows affected: ${result.rowsAffected}`);
+            console.log(`appService.js: Rows affected: ${result.rowsAffected}`);
 
             const allRecords = await connection.execute(
                 `SELECT * FROM Supplies`
             );
 
-            console.log("All remaining records in Supplies table:", allRecords.rows);
+            console.log("all remaining records in Supplies table:", allRecords.rows);
 
             return result.rowsAffected > 0;
         } catch (error) {
@@ -189,28 +189,10 @@ async function deleteSupplies(supplyName, branchCity, branchProvince) {
 }
 
 async function insertDemotable(donorId, branchCity, branchProvince, amount) {
-    console.log("appService.js: Starting insertDemotable with params:", { donorId, branchCity, branchProvince, amount });
+    console.log("appService.js: starting insertDemotable with params:", { donorId, branchCity, branchProvince, amount });
     return await withOracleDB(async (connection) => {
         try {
-            // DEBUG: First check Branch table structure
-            console.log("DEBUG: Checking Branch table structure...");
-            const tableInfo = await connection.execute(
-                `SELECT column_name, data_type 
-                 FROM user_tab_columns 
-                 WHERE table_name = 'BRANCH'`
-            );
-            console.log("Branch table columns:", tableInfo.rows);
-
-            // DEBUG: Check Branch table data
-            console.log("DEBUG: Checking Branch table data...");
-            const branchData = await connection.execute(
-                `SELECT * FROM Branch`
-            );
-            console.log("Branch table data:", branchData.rows);
-            // console.log("hope git saves")
-
-            // Continue with regular checks...
-            console.log("Checking donor ID...");
+            console.log("appService.js: checking donor ID");
             const donorIdCheck = await connection.execute(
                 `SELECT 1 FROM Donor WHERE donor_ID = :1`,
                 [donorId]
@@ -220,7 +202,7 @@ async function insertDemotable(donorId, branchCity, branchProvince, amount) {
                 throw new Error("A donor with this ID does not exist");
             }
 
-            console.log("Checking branch existence...");
+            console.log("appService.js: checking branch existence");
             const cityAndProvinceCheck = await connection.execute(
                 `SELECT 1 FROM Branch WHERE city = :1 AND province = :2`,
                 [branchCity, branchProvince]
@@ -230,7 +212,7 @@ async function insertDemotable(donorId, branchCity, branchProvince, amount) {
                 throw new Error(`There is no branch in ${branchCity}, ${branchProvince}!`);
             }
 
-            console.log("Inserting into Donate table...");
+            console.log("appService.js: inserting into Donate table");
             const result = await connection.execute(
                 `INSERT INTO Donate (donor_ID, branch_city, branch_province, amount) 
                  VALUES (:1, :2, :3, :4)`,
@@ -255,33 +237,33 @@ async function updateVolunteer(volunteerId, updates) {
     return await withOracleDB(async (connection) => {
         // Build dynamic UPDATE query based on provided fields
         let updateFields = [];
-        let bindParams = [];
+        // let bindParams = [];
         let bindValues = [];
 
         if (updates.volunteer_name) {
             updateFields.push('volunteer_name = :volunteer_name');
-            bindParams.push(':volunteer_name');
+            // bindParams.push(':volunteer_name');
             bindValues.push(updates.volunteer_name);
         }
         if (updates.volunteer_role) {
             updateFields.push('volunteer_role = :volunteer_role');
-            bindParams.push(':volunteer_role');
+            // bindParams.push(':volunteer_role');
             bindValues.push(updates.volunteer_role);
         }
         if (updates.started_date) {
             updateFields.push('started_date = TO_DATE(:started_date, \'YYYY-MM-DD\')');
-            bindParams.push(':started_date');
+            // bindParams.push(':started_date');
             bindValues.push(updates.started_date);
         }
         if (updates.branch_city && updates.branch_province) {
             updateFields.push('branch_city = :branch_city');
             updateFields.push('branch_province = :branch_province');
-            bindParams.push(':branch_city', ':branch_province');
+            // bindParams.push(':branch_city', ':branch_province');
             bindValues.push(updates.branch_city, updates.branch_province);
         }
 
         bindValues.push(volunteerId);
-        console.log("appService.js: Inside await now");
+        // console.log("appService.js: Inside await now");
         console.log("appService.js: will execute query soon");
         console.log("update_fields:", updateFields);
         console.log("bindValues:", bindValues);
