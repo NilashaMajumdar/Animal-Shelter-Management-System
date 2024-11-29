@@ -235,30 +235,24 @@ async function insertDemotable(donorId, branchCity, branchProvince, amount) {
 async function updateVolunteer(volunteerId, updates) {
     console.log("appService.js: Inside updateVolunteer function now");
     return await withOracleDB(async (connection) => {
-        // Build dynamic UPDATE query based on provided fields
         let updateFields = [];
-        // let bindParams = [];
         let bindValues = [];
 
         if (updates.volunteer_name) {
             updateFields.push('volunteer_name = :volunteer_name');
-            // bindParams.push(':volunteer_name');
             bindValues.push(updates.volunteer_name);
         }
         if (updates.volunteer_role) {
             updateFields.push('volunteer_role = :volunteer_role');
-            // bindParams.push(':volunteer_role');
             bindValues.push(updates.volunteer_role);
         }
         if (updates.started_date) {
             updateFields.push('started_date = TO_DATE(:started_date, \'YYYY-MM-DD\')');
-            // bindParams.push(':started_date');
             bindValues.push(updates.started_date);
         }
         if (updates.branch_city && updates.branch_province) {
             updateFields.push('branch_city = :branch_city');
             updateFields.push('branch_province = :branch_province');
-            // bindParams.push(':branch_city', ':branch_province');
             bindValues.push(updates.branch_city, updates.branch_province);
         }
 
